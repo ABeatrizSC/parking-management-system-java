@@ -3,8 +3,6 @@ package model.entities;
 import enums.AccessType;
 import enums.VehicleCategory;
 
-import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
 
 public class Vehicle {
@@ -22,6 +20,10 @@ public class Vehicle {
         this.category = category;
         slotSize = category.getSlotSize();
         this.accessType = accessType;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public Integer getId() {
@@ -55,4 +57,16 @@ public class Vehicle {
     public void setExitGate(Integer exitGate) {
         this.exitGate = exitGate;
     }
+
+    @Override
+    public String toString() {
+        return "Vehicle{" +
+                "id=" + id +
+                ", category=" + category +
+                ", slotSize=" + slotSize +
+                ", accessType=" + accessType +
+                ", entranceGate=" + entranceGate +
+                ", exitGate=" + exitGate;
+    }
+
 }
