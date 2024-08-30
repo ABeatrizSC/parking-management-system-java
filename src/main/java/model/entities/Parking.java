@@ -2,13 +2,13 @@ package model.entities;
 
 import enums.AccessType;
 import enums.VehicleCategory;
+import model.dao.DeliveryTruckDao;
 import model.dao.MonthlyPayerDao;
 import model.dao.VehicleDao;
 
 import java.util.Scanner;
 
-import static model.dao.DaoFactory.createMonthlyPayerDao;
-import static model.dao.DaoFactory.createVehicleDao;
+import static model.dao.DaoFactory.*;
 
 public class Parking {
     public static VehicleCategory chooseCategory(Scanner sc) {
@@ -75,7 +75,7 @@ public class Parking {
         return availableAccessTypes[validChoices[chosenAccessType - 1]];
     }
 
-    public static void captureMonthlyPayerAccessInfo(Scanner sc, Vehicle vehicle){
+    public static void captureMonthlyPayerAccessInfo(Scanner sc, Vehicle vehicle) {
         MonthlyPayerDao monthlyPayerDao = createMonthlyPayerDao();
 
         System.out.println("Type of access: MONTHLY PAYER");
@@ -90,15 +90,17 @@ public class Parking {
         } else {
             registerAMonthlyPayer(monthlyPayerDao, licensePlate, vehicle);
         }
+
+        //gates
     }
 
-    public static String captureAValidLicensePlate(){
+    public static String captureAValidLicensePlate() {
         Scanner sc = new Scanner(System.in);
         String newLicensePlate;
 
-        while(true){
+        while (true) {
             newLicensePlate = sc.next();
-            if (newLicensePlate.length() >= 7 && newLicensePlate.length() <= 8){
+            if (newLicensePlate.length() >= 7 && newLicensePlate.length() <= 8) {
                 break;
             }
             System.out.print("Please, inform a valid license plate: ");
@@ -106,18 +108,17 @@ public class Parking {
         return newLicensePlate.toUpperCase();
     }
 
-    public static void logInAMonthlyPayer(MonthlyPayerDao monthlyPayerDao, String licensePlate){
-        while(monthlyPayerDao.findByLicensePlate(licensePlate) == null) {
+    public static void logInAMonthlyPayer(MonthlyPayerDao monthlyPayerDao, String licensePlate) {
+        while (monthlyPayerDao.findByLicensePlate(licensePlate) == null) {
             System.out.print("No monthly member with this license plate was found. Try again: ");
             licensePlate = captureAValidLicensePlate();
         }
-        //gates
     }
 
-    public static void registerAMonthlyPayer(MonthlyPayerDao monthlyPayerDao, String licensePlate, Vehicle vehicle){
+    public static void registerAMonthlyPayer(MonthlyPayerDao monthlyPayerDao, String licensePlate, Vehicle vehicle) {
         VehicleDao vehicleDao = createVehicleDao();
 
-        if (monthlyPayerDao.findByLicensePlate(licensePlate) != null){
+        if (monthlyPayerDao.findByLicensePlate(licensePlate) != null) {
             System.out.print("The license plate already has a registration. Enter your license plate again to log in: ");
             licensePlate = captureAValidLicensePlate();
             logInAMonthlyPayer(monthlyPayerDao, licensePlate);
@@ -127,4 +128,45 @@ public class Parking {
             monthlyPayerDao.insert(monthlyPayer);
         }
     }
+
+    public static void captureDeliveryTrucksAccessInfo(Scanner sc, Vehicle vehicle){
+        DeliveryTruckDao deliveryTruckDao = createDeliveryTruckDao();
+
+        System.out.println("Type of access: DELIVERY TRUCK");
+        System.out.println("[1] Log in");
+        System.out.println("[2] Register");
+        int resMp = sc.nextInt();
+        System.out.print("Enter your license plate: ");
+        String licensePlate = captureAValidLicensePlate();
+
+        if (resMp == 1) {
+            logInADeliveryTruck(deliveryTruckDao, licensePlate);
+        } else {
+            registerADeliveryTruck(deliveryTruckDao, licensePlate, vehicle);
+        }
+    }
+
+    public static void logInADeliveryTruck(DeliveryTruckDao deliveryTruckDao, String licensePlate) {
+        while (deliveryTruckDao.findByLicensePlate(licensePlate) == null) {
+            System.out.print("No monthly member with this license plate was found. Try again: ");
+            licensePlate = captureAValidLicensePlate();
+        }
+    }
+
+    public static void registerADeliveryTruck(DeliveryTruckDao deliveryTruckDao, String licensePlate, Vehicle vehicle) {
+        VehicleDao vehicleDao = createVehicleDao();
+
+        if (deliveryTruckDao.findByLicensePlate(licensePlate) != null) {
+            System.out.print("The license plate already has a registration. Enter your license plate again to log in: ");
+            licensePlate = captureAValidLicensePlate();
+            logInADeliveryTruck(deliveryTruckDao, licensePlate);
+        } else {
+            vehicleDao.insert(vehicle);
+            DeliveryTruck deliveryTruck = new DeliveryTruck(null, licensePlate, vehicle);
+            deliveryTruckDao.insert(deliveryTruck);
+        }
+    }
+
+
 }
+

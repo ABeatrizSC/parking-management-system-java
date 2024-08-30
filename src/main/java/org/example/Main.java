@@ -43,9 +43,14 @@ public class Main {
             switch (accessType){
                 case MONTHLY_PLAYER:
                     captureMonthlyPayerAccessInfo(sc, vehicle);
-                case TICKET:
+                    break;
                 case DELIVERY_TRUCKS:
+                    captureDeliveryTrucksAccessInfo(sc, vehicle);
+                    break;
+                case TICKET:
+                    break;
                 case PUBLIC_SERVICE:
+                    break;
             }
 
         } else {

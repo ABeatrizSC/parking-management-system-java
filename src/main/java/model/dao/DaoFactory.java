@@ -1,6 +1,7 @@
 package model.dao;
 
 import db.DB;
+import model.dao.impl.DeliveryTruckDaoJDBC;
 import model.dao.impl.MonthlyPayerDaoJDBC;
 import model.dao.impl.VehicleDaoJDBC;
 
@@ -11,5 +12,9 @@ public interface DaoFactory {
 
     public static MonthlyPayerDaoJDBC createMonthlyPayerDao(){
         return new MonthlyPayerDaoJDBC(DB.getConnection());
+    }
+
+    public static DeliveryTruckDaoJDBC createDeliveryTruckDao(){
+        return new DeliveryTruckDaoJDBC(DB.getConnection());
     }
 }
