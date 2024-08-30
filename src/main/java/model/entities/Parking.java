@@ -2,8 +2,13 @@ package model.entities;
 
 import enums.AccessType;
 import enums.VehicleCategory;
+import model.dao.MonthlyPayerDao;
+import model.dao.VehicleDao;
 
 import java.util.Scanner;
+
+import static model.dao.DaoFactory.createMonthlyPayerDao;
+import static model.dao.DaoFactory.createVehicleDao;
 
 public class Parking {
     public static VehicleCategory chooseCategory(Scanner sc) {
@@ -68,5 +73,58 @@ public class Parking {
         }
 
         return availableAccessTypes[validChoices[chosenAccessType - 1]];
+    }
+
+    public static void captureMonthlyPayerAccessInfo(Scanner sc, Vehicle vehicle){
+        MonthlyPayerDao monthlyPayerDao = createMonthlyPayerDao();
+
+        System.out.println("Type of access: MONTHLY PAYER");
+        System.out.println("[1] Log in");
+        System.out.println("[2] Register");
+        int resMp = sc.nextInt();
+        System.out.print("Enter your license plate: ");
+        String licensePlate = captureAValidLicensePlate();
+
+        if (resMp == 1) {
+            logInAMonthlyPayer(monthlyPayerDao, licensePlate);
+        } else {
+            registerAMonthlyPayer(monthlyPayerDao, licensePlate, vehicle);
+        }
+    }
+
+    public static String captureAValidLicensePlate(){
+        Scanner sc = new Scanner(System.in);
+        String newLicensePlate;
+
+        while(true){
+            newLicensePlate = sc.next();
+            if (newLicensePlate.length() >= 7 && newLicensePlate.length() <= 8){
+                break;
+            }
+            System.out.print("Please, inform a valid license plate: ");
+        }
+        return newLicensePlate.toUpperCase();
+    }
+
+    public static void logInAMonthlyPayer(MonthlyPayerDao monthlyPayerDao, String licensePlate){
+        while(monthlyPayerDao.findByLicensePlate(licensePlate) == null) {
+            System.out.print("No monthly member with this license plate was found. Try again: ");
+            licensePlate = captureAValidLicensePlate();
+        }
+        //gates
+    }
+
+    public static void registerAMonthlyPayer(MonthlyPayerDao monthlyPayerDao, String licensePlate, Vehicle vehicle){
+        VehicleDao vehicleDao = createVehicleDao();
+
+        if (monthlyPayerDao.findByLicensePlate(licensePlate) != null){
+            System.out.print("The license plate already has a registration. Enter your license plate again to log in: ");
+            licensePlate = captureAValidLicensePlate();
+            logInAMonthlyPayer(monthlyPayerDao, licensePlate);
+        } else {
+            vehicleDao.insert(vehicle);
+            MonthlyPayer monthlyPayer = new MonthlyPayer(null, licensePlate, vehicle);
+            monthlyPayerDao.insert(monthlyPayer);
+        }
     }
 }
