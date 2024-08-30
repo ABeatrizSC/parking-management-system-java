@@ -2,6 +2,8 @@ package model.dao.impl;
 
 import db.DB;
 import db.DbException;
+import enums.AccessType;
+import enums.VehicleCategory;
 import model.dao.VehicleDao;
 import model.entities.Vehicle;
 
@@ -73,5 +75,41 @@ public class VehicleDaoJDBC implements VehicleDao {
         finally {
             DB.closeStatement(st);
         }
+    }
+
+    @Override
+    public Vehicle findById(Integer id) {
+        PreparedStatement st = null;
+        ResultSet rs = null;
+
+        try {
+            st = conn.prepareStatement("SELECT * FROM vehicles WHERE Id = ?");
+
+            st.setInt(1, id);
+
+            rs = st.executeQuery();
+
+            if (rs.next()) {
+                Vehicle vehicle = instantiateVehicle(rs);
+                return vehicle;
+            }
+            System.out.println("No vehicle was found with this ID");
+            return null;
+        }
+        catch (SQLException e) {
+            throw new DbException(e.getMessage());
+        }
+        finally {
+            DB.closeStatement(st);
+        }
+    }
+
+    public Vehicle instantiateVehicle(ResultSet rs) throws SQLException {
+        Vehicle vehicle = new Vehicle();
+        vehicle.setId(rs.getInt("id"));
+        vehicle.setCategory(VehicleCategory.valueOf(rs.getString("category")));
+        vehicle.setAccessType(AccessType.valueOf(rs.getString("accesstype")));
+
+        return vehicle;
     }
 }
