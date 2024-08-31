@@ -9,6 +9,8 @@ public class Vehicle {
     private VehicleCategory category;
     private Integer slotSize;
     private AccessType accessType;
+    private Integer entranceGate;
+    private Integer exitGate;
 
     public Vehicle() {
     }
@@ -50,6 +52,22 @@ public class Vehicle {
 
     public void setAccessType(AccessType accessType) {
         this.accessType = accessType;
+    }
+
+    public Integer getEntranceGate() {
+        return entranceGate;
+    }
+
+    public void setEntranceGate(Integer entranceGate) {
+        this.entranceGate = entranceGate;
+    }
+
+    public Integer getExitGate() {
+        return exitGate;
+    }
+
+    public void setExitGate(Integer exitGate) {
+        this.exitGate = exitGate;
     }
 
     @Override

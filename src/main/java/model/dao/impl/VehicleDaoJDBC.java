@@ -5,12 +5,10 @@ import db.DbException;
 import enums.AccessType;
 import enums.VehicleCategory;
 import model.dao.VehicleDao;
+import model.entities.Gate;
 import model.entities.Vehicle;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 
 public class VehicleDaoJDBC implements VehicleDao {
 
@@ -48,6 +46,42 @@ public class VehicleDaoJDBC implements VehicleDao {
                 DB.closeResultSet(rs);
             }
             else {
+                throw new DbException("Unexpected error! No rows affected!");
+            }
+        }
+        catch (SQLException e) {
+            throw new DbException(e.getMessage());
+        }
+        finally {
+            DB.closeStatement(st);
+        }
+    }
+
+    @Override
+    public void updateSelectionedGate(Vehicle vehicle, Integer selectionedGate) {
+        PreparedStatement st = null;
+        String gateType;
+        try {
+            if(Gate.GateType.ENTRANCE.getGateNumbers().contains(selectionedGate)) {
+                st = conn.prepareStatement(
+                        "UPDATE vehicles "
+                                + "SET entranceGate = ? "
+                                + "WHERE Id = ? "
+                );
+            } else {
+                st = conn.prepareStatement(
+                        "UPDATE vehicles "
+                                + "SET exitGate = ? "
+                                + "WHERE Id = ? "
+                );
+            }
+
+            st.setInt(1, vehicle.getEntranceGate());
+            st.setInt(2, vehicle.getId());
+
+            int rowsAffected = st.executeUpdate();
+
+            if (rowsAffected < 0) {
                 throw new DbException("Unexpected error! No rows affected!");
             }
         }
@@ -104,11 +138,43 @@ public class VehicleDaoJDBC implements VehicleDao {
         }
     }
 
+    @Override
+    public Vehicle findByLicensePlate(String licensePLate) {
+        PreparedStatement st = null;
+        ResultSet rs = null;
+
+        try {
+            st = conn.prepareStatement("SELECT vehicles.id,  vehicles.category, vehicles.accessType, vehicles.slotSize, vehicles.entranceGatesAvailable, vehicles.exitGatesAvailable " +
+                    "FROM vehicles " +
+                    "JOIN monthlyPayer ON vehicles.id = monthlyPayer.vehicle_id " +
+                    "WHERE monthlyPayer.licensePlate = ?");
+
+            st.setString(1, licensePLate);
+
+            rs = st.executeQuery();
+
+            if (rs.next()) {
+                Vehicle vehicle = instantiateVehicle(rs);
+                return vehicle;
+            }
+            System.out.println("No vehicle was found with this ID");
+            return null;
+        }
+        catch (SQLException e) {
+            throw new DbException(e.getMessage());
+        }
+        finally {
+            DB.closeStatement(st);
+        }
+    }
+
     public Vehicle instantiateVehicle(ResultSet rs) throws SQLException {
         Vehicle vehicle = new Vehicle();
         vehicle.setId(rs.getInt("id"));
+        System.out.println("aqui");
         vehicle.setCategory(VehicleCategory.valueOf(rs.getString("category")));
-        vehicle.setAccessType(AccessType.valueOf(rs.getString("accesstype")));
+        vehicle.setAccessType(AccessType.valueOf(rs.getString("accessType")));
+        vehicle.setSlotSize(rs.getInt("slotSize"));
 
         return vehicle;
     }

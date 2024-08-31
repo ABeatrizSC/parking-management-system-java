@@ -6,6 +6,8 @@ import model.dao.DeliveryTruckDao;
 import model.dao.MonthlyPayerDao;
 import model.dao.VehicleDao;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 import static model.dao.DaoFactory.*;
@@ -75,25 +77,6 @@ public class Parking {
         return availableAccessTypes[validChoices[chosenAccessType - 1]];
     }
 
-    public static void captureMonthlyPayerAccessInfo(Scanner sc, Vehicle vehicle) {
-        MonthlyPayerDao monthlyPayerDao = createMonthlyPayerDao();
-
-        System.out.println("Type of access: MONTHLY PAYER");
-        System.out.println("[1] Log in");
-        System.out.println("[2] Register");
-        int resMp = sc.nextInt();
-        System.out.print("Enter your license plate: ");
-        String licensePlate = captureAValidLicensePlate();
-
-        if (resMp == 1) {
-            logInAMonthlyPayer(monthlyPayerDao, licensePlate);
-        } else {
-            registerAMonthlyPayer(monthlyPayerDao, licensePlate, vehicle);
-        }
-
-        //gates
-    }
-
     public static String captureAValidLicensePlate() {
         Scanner sc = new Scanner(System.in);
         String newLicensePlate;
@@ -108,29 +91,51 @@ public class Parking {
         return newLicensePlate.toUpperCase();
     }
 
-    public static void logInAMonthlyPayer(MonthlyPayerDao monthlyPayerDao, String licensePlate) {
+    public static Vehicle captureMonthlyPayerAccessInfo(Scanner sc, Vehicle vehicle) {
+        MonthlyPayerDao monthlyPayerDao = createMonthlyPayerDao();
+        VehicleDao vehicleDao = createVehicleDao();
+
+        System.out.println("Type of access: MONTHLY PAYER");
+        System.out.println("[1] Log in");
+        System.out.println("[2] Register");
+        int resMp = sc.nextInt();
+        System.out.print("Enter your license plate: ");
+        String licensePlate = captureAValidLicensePlate();
+
+        if (resMp == 1) {
+            vehicle = logInAMonthlyPayer(monthlyPayerDao, licensePlate, vehicleDao);
+        } else {
+            vehicle = registerAMonthlyPayer(monthlyPayerDao, licensePlate, vehicle);
+        }
+        return vehicle;
+    }
+
+    public static Vehicle logInAMonthlyPayer(MonthlyPayerDao monthlyPayerDao, String licensePlate, VehicleDao vehicleDao) {
         while (monthlyPayerDao.findByLicensePlate(licensePlate) == null) {
             System.out.print("No monthly member with this license plate was found. Try again: ");
             licensePlate = captureAValidLicensePlate();
         }
+        return vehicleDao.findByLicensePlate(licensePlate);
     }
 
-    public static void registerAMonthlyPayer(MonthlyPayerDao monthlyPayerDao, String licensePlate, Vehicle vehicle) {
+    public static Vehicle registerAMonthlyPayer(MonthlyPayerDao monthlyPayerDao, String licensePlate, Vehicle vehicle) {
         VehicleDao vehicleDao = createVehicleDao();
 
         if (monthlyPayerDao.findByLicensePlate(licensePlate) != null) {
             System.out.print("The license plate already has a registration. Enter your license plate again to log in: ");
             licensePlate = captureAValidLicensePlate();
-            logInAMonthlyPayer(monthlyPayerDao, licensePlate);
+            logInAMonthlyPayer(monthlyPayerDao, licensePlate, vehicleDao);
         } else {
             vehicleDao.insert(vehicle);
             MonthlyPayer monthlyPayer = new MonthlyPayer(null, licensePlate, vehicle);
             monthlyPayerDao.insert(monthlyPayer);
         }
+        return vehicle;
     }
 
     public static void captureDeliveryTrucksAccessInfo(Scanner sc, Vehicle vehicle){
         DeliveryTruckDao deliveryTruckDao = createDeliveryTruckDao();
+        VehicleDao vehicleDao = createVehicleDao();
 
         System.out.println("Type of access: DELIVERY TRUCK");
         System.out.println("[1] Log in");
@@ -140,33 +145,57 @@ public class Parking {
         String licensePlate = captureAValidLicensePlate();
 
         if (resMp == 1) {
-            logInADeliveryTruck(deliveryTruckDao, licensePlate);
+            logInADeliveryTruck(deliveryTruckDao, licensePlate, vehicleDao);
         } else {
             registerADeliveryTruck(deliveryTruckDao, licensePlate, vehicle);
         }
     }
 
-    public static void logInADeliveryTruck(DeliveryTruckDao deliveryTruckDao, String licensePlate) {
+    public static Vehicle logInADeliveryTruck(DeliveryTruckDao deliveryTruckDao, String licensePlate, VehicleDao vehicleDao) {
         while (deliveryTruckDao.findByLicensePlate(licensePlate) == null) {
             System.out.print("No monthly member with this license plate was found. Try again: ");
             licensePlate = captureAValidLicensePlate();
         }
+        return vehicleDao.findByLicensePlate(licensePlate);
     }
 
-    public static void registerADeliveryTruck(DeliveryTruckDao deliveryTruckDao, String licensePlate, Vehicle vehicle) {
+    public static Vehicle registerADeliveryTruck(DeliveryTruckDao deliveryTruckDao, String licensePlate, Vehicle vehicle) {
         VehicleDao vehicleDao = createVehicleDao();
 
         if (deliveryTruckDao.findByLicensePlate(licensePlate) != null) {
             System.out.print("The license plate already has a registration. Enter your license plate again to log in: ");
             licensePlate = captureAValidLicensePlate();
-            logInADeliveryTruck(deliveryTruckDao, licensePlate);
+            logInADeliveryTruck(deliveryTruckDao, licensePlate, vehicleDao);
         } else {
             vehicleDao.insert(vehicle);
             DeliveryTruck deliveryTruck = new DeliveryTruck(null, licensePlate, vehicle);
             deliveryTruckDao.insert(deliveryTruck);
         }
+        return vehicle;
     }
 
+    public static Integer chooseAEntranceGate(Scanner sc){
+        Integer selectionedGate;
+
+        System.out.println("Choose a gate:");
+        List<Integer> availableGates = new ArrayList<>();
+        availableGates = Gate.GateType.ENTRANCE.getGateNumbers();
+        int count = 1;
+        for (Integer gate : availableGates) {
+            System.out.println("[" + count + "]" + " CANCELA " + gate);
+            count++;
+        }
+
+        while(true){
+            selectionedGate = sc.nextInt();
+            if (selectionedGate >= 1 && selectionedGate <= availableGates.size()) {
+                break;
+            }
+            System.out.println("Invalid gate number. Please, try again:");
+        }
+
+        return selectionedGate;
+    }
 
 }
 

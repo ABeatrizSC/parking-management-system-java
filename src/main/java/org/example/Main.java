@@ -3,11 +3,13 @@ package org.example;
 import enums.AccessType;
 import enums.VehicleCategory;
 import model.dao.VehicleDao;
+import model.entities.Gate;
 import model.entities.Vehicle;
 
-import java.util.Scanner;
+import java.util.*;
 
 import static model.dao.DaoFactory.createVehicleDao;
+import static model.entities.Gate.operateGate;
 import static model.entities.Parking.*;
 
 public class Main {
@@ -34,15 +36,18 @@ public class Main {
 
         System.out.println("Choose your vehicle category:");
         vehicleCategory = chooseCategory(sc);
-        System.out.println("Choose an access type:");
-        accessType = chooseAccessType(sc, vehicleCategory);
+        if (vehicleCategory != VehicleCategory.PUBLIC_SERVICE && vehicleCategory != VehicleCategory.DELIVERY_TRUCKS) {
+            System.out.println("Choose an access type:");
+            accessType = chooseAccessType(sc, vehicleCategory);
+        } else {
+           accessType = AccessType.valueOf(vehicleCategory.toString());
+        }
 
         if (res == 1){
             vehicle = new Vehicle(null, vehicleCategory, accessType);
-
             switch (accessType){
                 case MONTHLY_PLAYER:
-                    captureMonthlyPayerAccessInfo(sc, vehicle);
+                    vehicle = captureMonthlyPayerAccessInfo(sc, vehicle);
                     break;
                 case DELIVERY_TRUCKS:
                     captureDeliveryTrucksAccessInfo(sc, vehicle);
@@ -53,11 +58,11 @@ public class Main {
                     break;
             }
 
+            Integer selectionedGate = chooseAEntranceGate(sc);
+            operateGate(Gate.GateType.ENTRANCE, vehicle, selectionedGate, vehicleDao);
         } else {
             //exit implementation
         }
-
-
 
         sc.close();
     }

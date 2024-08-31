@@ -1,6 +1,7 @@
 package model.entities;
 
 import enums.VehicleCategory;
+import model.dao.VehicleDao;
 
 import java.util.*;
 
@@ -41,25 +42,25 @@ public class Gate {
         return type;
     }
 
-//    public static void operateGate(GateType type, Vehicle vehicle, Integer selectionedGate){
-//        System.out.println("entradas de acordo: " + vehicle.getCategory().getEntranceGates());
-//        System.out.println("saidas de acordo: " + vehicle.getCategory().getExitGates());
-//        if (type == GateType.ENTRANCE) {
-//            if (vehicle.getCategory().getEntranceGates().contains(selectionedGate)) {
-//                vehicle.setEntranceGate(selectionedGate);
-//                occupyParkingSpace();
-//            } else {
-//                System.out.println("Esta cancela não pode ser acessada pelo seu tipo de veículo. Tente outra.");
-//            }
-//        } else {
-//            if (vehicle.getCategory().getExitGates().contains(selectionedGate)) {
-//                vehicle.setExitGate(selectionedGate);
-//                emptyParkingSpace();
-//            } else {
-//                System.out.println("Esta cancela não pode ser acessada pelo seu tipo de veículo. Tente outra.");
-//            }
-//        }
-//    }
+    public static void operateGate(GateType type, Vehicle vehicle, Integer selectionedGate, VehicleDao vehicleDao){
+        if (type == GateType.ENTRANCE) {
+            if (vehicle.getCategory().getEntranceGates().contains(selectionedGate.toString())) {
+                vehicle.setEntranceGate(selectionedGate);
+                occupyParkingSpace();
+                vehicleDao.updateSelectionedGate(vehicle, selectionedGate);
+            } else {
+                System.out.println("Esta cancela não pode ser acessada pelo seu tipo de veículo. Tente outra.");
+            }
+        } else {
+            if (vehicle.getCategory().getExitGates().contains(selectionedGate.toString())) {
+                vehicle.setExitGate(selectionedGate);
+                emptyParkingSpace();
+            } else {
+                System.out.println("Esta cancela não pode ser acessada pelo seu tipo de veículo. Tente outra.");
+            }
+        }
+        vehicle.setEntranceGate(selectionedGate);
+    }
 
     @Override
     public boolean equals(Object o) {
