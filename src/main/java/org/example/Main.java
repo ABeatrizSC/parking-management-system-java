@@ -1,14 +1,18 @@
 package org.example;
 
 import enums.AccessType;
+import enums.SlotType;
 import enums.VehicleCategory;
+import model.dao.ParkingSpaceDao;
 import model.dao.VehicleDao;
 import model.entities.Gate;
+import model.entities.Parking;
+import model.entities.ParkingSpace;
 import model.entities.Vehicle;
 
 import java.util.*;
 
-import static model.dao.DaoFactory.createVehicleDao;
+import static model.dao.DaoFactory.*;
 import static model.entities.Gate.operateGate;
 import static model.entities.Parking.*;
 
@@ -56,6 +60,8 @@ public class Main {
                     break;
             }
 
+            int[] parkingSpaces = captureValidParkingSpaces(vehicle);
+            occupyParkingSpace(parkingSpaces, vehicle);
             operateGate(Gate.GateType.ENTRANCE, vehicle, vehicleDao, sc);
         } else {
             //exit implementation

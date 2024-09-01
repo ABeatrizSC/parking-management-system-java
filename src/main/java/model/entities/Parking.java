@@ -1,12 +1,12 @@
 package model.entities;
 
 import enums.AccessType;
+import enums.SlotType;
 import enums.VehicleCategory;
-import model.dao.DeliveryTruckDao;
-import model.dao.MonthlyPayerDao;
-import model.dao.VehicleDao;
+import model.dao.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
@@ -77,6 +77,29 @@ public class Parking {
         return availableAccessTypes[validChoices[chosenAccessType - 1]];
     }
 
+    public static Integer chooseAEntranceGate(Scanner sc){
+        Integer selectionedGate;
+
+        System.out.println("Choose a gate:");
+        List<Integer> availableGates = new ArrayList<>();
+        availableGates = Gate.GateType.ENTRANCE.getGateNumbers();
+        int count = 1;
+        for (Integer gate : availableGates) {
+            System.out.println("[" + count + "]" + " CANCELA " + gate);
+            count++;
+        }
+
+        while(true){
+            selectionedGate = sc.nextInt();
+            if (selectionedGate >= 1 && selectionedGate <= availableGates.size()) {
+                break;
+            }
+            System.out.println("Invalid gate number. Please, try again:");
+        }
+
+        return selectionedGate;
+    }
+
     public static String captureAValidLicensePlate() {
         Scanner sc = new Scanner(System.in);
         String newLicensePlate;
@@ -89,6 +112,122 @@ public class Parking {
             System.out.print("Please, inform a valid license plate: ");
         }
         return newLicensePlate.toUpperCase();
+    }
+
+    public static int[] captureValidParkingSpaces(Vehicle vehicle) {
+        ParkingSpaceDao parkingSpaceDao = createParkingSpaceDao();
+        Scanner sc = new Scanner(System.in);
+        String parkingSpaces;
+        int[] spaces;
+
+        System.out.println("Choose parking spaces:\nWarning: The number of parking spaces must be separated by blank spaces.");
+
+        while (true) {
+            parkingSpaces = sc.nextLine();
+            String[] p = parkingSpaces.split(" ");
+            spaces = new int[p.length];
+
+            if (areSpacesANumber(spaces, p)) {
+                for (int i = 0; i < p.length; i++) {
+                    spaces[i] = Integer.parseInt(p[i]);
+                }
+            }
+
+            if (areSpacesValidByAccessType(spaces, vehicle) && areSpacesANumber(spaces, p) &&
+                    isCorrectNumberOfSpaces(spaces, vehicle) &&
+                    areSpacesSequential(spaces) &&
+                    !areAnySpacesOccupied(spaces, parkingSpaceDao)) {
+                break;
+            }
+        }
+        return spaces;
+    }
+
+    private static Boolean areSpacesValidByAccessType(int[] spaces, Vehicle vehicle) {
+        if (vehicle.getAccessType() == AccessType.MONTHLY_PLAYER) {
+            for (int space : spaces){
+                if (space < 1 || space > SlotType.MONTHLY.getQuantity()) {
+                    System.out.println("These parking spaces are exclusively for casual visitors or don't exist. Try again:");
+                    return false;
+                }
+            }
+        } else {
+            for (int space : spaces){
+                if (space < 201 || space > SlotType.CASUAL.getQuantity()) {
+                    System.out.println("These parking spaces are exclusive to monthly members or don't exist. Try again:");
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    private static Boolean areSpacesANumber(int[] spaces, String[] p) {
+        try {
+            for (int i = 0; i < p.length; i++) {
+                spaces[i] = Integer.parseInt(p[i]);
+            }
+        } catch (NumberFormatException e) {
+            System.out.println("Error: Please enter valid numbers for parking spaces.");
+            return false;
+        }
+        return true;
+    }
+
+    private static Boolean isCorrectNumberOfSpaces(int[] spaces, Vehicle vehicle) {
+        if (spaces.length != vehicle.getSlotSize()) {
+            System.out.println("Error: Incorrect number of parking spaces. Expected: " + vehicle.getSlotSize() + ". Try again:");
+            return false;
+        }
+        return true;
+    }
+
+    private static Boolean areAnySpacesOccupied(int[] spaces, ParkingSpaceDao parkingSpaceDao) {
+        for (int i = 0; i < spaces.length; i++) {
+            ParkingSpace parkingSpace = parkingSpaceDao.findById(spaces[i]);
+            if (parkingSpace != null && parkingSpace.getIsOccupied()) {
+                System.out.println("Error: Parking Space " + spaces[i] + " is already occupied. Try again:");
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static Boolean areSpacesSequential(int[] spaces) {
+        Arrays.sort(spaces);
+        for (int i = 1; i < spaces.length; i++) {
+            if (spaces[i] != spaces[i - 1] + 1) {
+                System.out.println("Error: Parking spaces are not sequential. Try again:");
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public static void occupyParkingSpace(int[] parkingSpaces, Vehicle vehicle){
+        ParkingSpaceDao parkingSpaceDao = createParkingSpaceDao();
+        ParkingSpace parkingSpace;
+        for (int id : parkingSpaces) {
+            if(vehicle.getAccessType() == AccessType.MONTHLY_PLAYER) {
+                parkingSpace = new ParkingSpace(id, SlotType.MONTHLY, true, vehicle);
+            } else {
+                parkingSpace = new ParkingSpace(id, SlotType.CASUAL, true, vehicle);
+            }
+            parkingSpaceDao.update(parkingSpace);
+        }
+    }
+
+    public static void emptyParkingSpace(int[] parkingSpaces, Vehicle vehicle){
+        ParkingSpaceDao parkingSpaceDao = createParkingSpaceDao();
+        ParkingSpace parkingSpace;
+        for (int id : parkingSpaces) {
+            if(vehicle.getAccessType() == AccessType.MONTHLY_PLAYER) {
+                parkingSpace = new ParkingSpace(id, SlotType.MONTHLY, false, null);
+            } else {
+                parkingSpace = new ParkingSpace(id, SlotType.CASUAL, false, null);
+            }
+            parkingSpaceDao.update(parkingSpace);
+        }
     }
 
     public static Vehicle captureMonthlyPayerAccessInfo(Scanner sc, Vehicle vehicle) {
@@ -174,29 +313,5 @@ public class Parking {
         }
         return vehicle;
     }
-
-    public static Integer chooseAEntranceGate(Scanner sc){
-        Integer selectionedGate;
-
-        System.out.println("Choose a gate:");
-        List<Integer> availableGates = new ArrayList<>();
-        availableGates = Gate.GateType.ENTRANCE.getGateNumbers();
-        int count = 1;
-        for (Integer gate : availableGates) {
-            System.out.println("[" + count + "]" + " CANCELA " + gate);
-            count++;
-        }
-
-        while(true){
-            selectionedGate = sc.nextInt();
-            if (selectionedGate >= 1 && selectionedGate <= availableGates.size()) {
-                break;
-            }
-            System.out.println("Invalid gate number. Please, try again:");
-        }
-
-        return selectionedGate;
-    }
-
 }
 

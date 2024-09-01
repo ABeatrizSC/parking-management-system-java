@@ -6,8 +6,6 @@ import model.dao.VehicleDao;
 import java.util.*;
 
 import static model.entities.Parking.chooseAEntranceGate;
-import static model.entities.ParkingSpace.emptyParkingSpace;
-import static model.entities.ParkingSpace.occupyParkingSpace;
 
 public class Gate {
     private Integer id;
@@ -50,7 +48,7 @@ public class Gate {
                 selectionedGate = chooseAEntranceGate(sc);
                 if (vehicle.getCategory().getEntranceGates().contains(selectionedGate.toString())) {
                     vehicle.setEntranceGate(selectionedGate);
-                    occupyParkingSpace();
+                    //occupyParkingSpace();
                     vehicleDao.updateSelectionedGate(vehicle, selectionedGate);
                     break;
                 }
@@ -61,7 +59,7 @@ public class Gate {
                 selectionedGate = chooseAEntranceGate(sc);
                 if (vehicle.getCategory().getExitGates().contains(selectionedGate.toString())) {
                     vehicle.setExitGate(selectionedGate);
-                    emptyParkingSpace();
+                    //emptyParkingSpace();
                     break;
                 }
                 System.out.println("This gate can't be accessed due to your vehicle type. Try another one.");

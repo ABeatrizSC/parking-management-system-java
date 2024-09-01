@@ -127,7 +127,6 @@ public class VehicleDaoJDBC implements VehicleDao {
                 Vehicle vehicle = instantiateVehicle(rs);
                 return vehicle;
             }
-            System.out.println("No vehicle was found with this ID");
             return null;
         }
         catch (SQLException e) {
@@ -163,7 +162,6 @@ public class VehicleDaoJDBC implements VehicleDao {
                 Vehicle vehicle = instantiateVehicle(rs);
                 return vehicle;
             }
-            System.out.println("No vehicle was found with this ID");
             return null;
         }
         catch (SQLException e) {

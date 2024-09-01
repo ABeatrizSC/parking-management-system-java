@@ -2,47 +2,52 @@ package model.entities;
 
 import enums.SlotType;
 
-import java.util.Objects;
-
 public class ParkingSpace {
     private Integer id;
     private SlotType type;
-    private static Boolean isOcuppied;
+    private Boolean isOccupied;
 
-    public ParkingSpace(Integer id, SlotType type) {
+    Vehicle vehicle;
+
+    public ParkingSpace() {
+    }
+
+    public ParkingSpace(Integer id, SlotType type, Boolean isOccupied, Vehicle vehicle) {
         this.id = id;
         this.type = type;
-        isOcuppied = false;
+        this.isOccupied = isOccupied;
+        this.vehicle = vehicle;
     }
 
     public Integer getId() {
         return id;
     }
 
-    public Boolean getOcuppied() {
-        return isOcuppied;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
-    public static void occupyParkingSpace(){
-        isOcuppied = true;
+    public SlotType getType() {
+        return type;
     }
 
-    public static void emptyParkingSpace(){
-        isOcuppied = false;
+    public void setType(SlotType type) {
+        this.type = type;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o)
-            return true;
-        if (o == null || getClass() != o.getClass())
-            return false;
-        ParkingSpace that = (ParkingSpace) o;
-        return Objects.equals(id, that.id);
+    public Boolean getIsOccupied() {
+        return isOccupied;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(id);
+    public void setIsOccupied(Boolean isOccupied) {
+        this.isOccupied = isOccupied;
+    }
+
+    public Vehicle getVehicle() {
+        return vehicle;
+    }
+
+    public void setVehicle(Vehicle vehicle) {
+        this.vehicle = vehicle;
     }
 }
