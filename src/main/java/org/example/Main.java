@@ -50,11 +50,9 @@ public class Main {
                     vehicle = captureMonthlyPayerAccessInfo(sc, vehicle);
                     break;
                 case DELIVERY_TRUCKS:
-                    captureDeliveryTrucksAccessInfo(sc, vehicle);
+                    vehicle = captureDeliveryTrucksAccessInfo(sc, vehicle);
                     break;
                 case TICKET:
-                    break;
-                case PUBLIC_SERVICE:
                     break;
             }
 

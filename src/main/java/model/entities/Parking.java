@@ -133,7 +133,7 @@ public class Parking {
         return vehicle;
     }
 
-    public static void captureDeliveryTrucksAccessInfo(Scanner sc, Vehicle vehicle){
+    public static Vehicle captureDeliveryTrucksAccessInfo(Scanner sc, Vehicle vehicle){
         DeliveryTruckDao deliveryTruckDao = createDeliveryTruckDao();
         VehicleDao vehicleDao = createVehicleDao();
 
@@ -145,10 +145,11 @@ public class Parking {
         String licensePlate = captureAValidLicensePlate();
 
         if (resMp == 1) {
-            logInADeliveryTruck(deliveryTruckDao, licensePlate, vehicleDao);
+            vehicle = logInADeliveryTruck(deliveryTruckDao, licensePlate, vehicleDao);
         } else {
-            registerADeliveryTruck(deliveryTruckDao, licensePlate, vehicle);
+            vehicle = registerADeliveryTruck(deliveryTruckDao, licensePlate, vehicle);
         }
+        return vehicle;
     }
 
     public static Vehicle logInADeliveryTruck(DeliveryTruckDao deliveryTruckDao, String licensePlate, VehicleDao vehicleDao) {
