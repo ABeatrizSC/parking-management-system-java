@@ -139,22 +139,29 @@ public class VehicleDaoJDBC implements VehicleDao {
     }
 
     @Override
-    public Vehicle findByLicensePlate(String licensePLate) {
+    public Vehicle findByLicensePlate(String licensePlate) {
         PreparedStatement st = null;
         ResultSet rs = null;
 
         try {
-            st = conn.prepareStatement("SELECT vehicles.id,  vehicles.category, vehicles.accessType, vehicles.slotSize, vehicles.entranceGatesAvailable, vehicles.exitGatesAvailable " +
-                    "FROM vehicles " +
-                    "JOIN monthlyPayer ON vehicles.id = monthlyPayer.vehicle_id " +
-                    "WHERE monthlyPayer.licensePlate = ?");
+            st = conn.prepareStatement("SELECT vehicles.id, vehicles.category, vehicles.accessType, vehicles.slotSize, vehicles.entranceGatesAvailable, vehicles.exitGatesAvailable " +
+                            "FROM vehicles " +
+                            "JOIN monthlyPayer ON vehicles.id = monthlyPayer.vehicle_id " +
+                            "WHERE monthlyPayer.licensePlate = ? " +
+                            "UNION " +
+                            "SELECT vehicles.id, vehicles.category, vehicles.accessType, vehicles.slotSize, vehicles.entranceGatesAvailable, vehicles.exitGatesAvailable " +
+                            "FROM vehicles " +
+                            "JOIN deliveryTruck ON vehicles.id = deliveryTruck.vehicle_id " +
+                            "WHERE deliveryTruck.licensePlate = ?");
 
-            st.setString(1, licensePLate);
+            st.setString(1, licensePlate);
+            st.setString(2, licensePlate);
 
             rs = st.executeQuery();
 
             if (rs.next()) {
                 Vehicle vehicle = instantiateVehicle(rs);
+                System.out.println(vehicle);
                 return vehicle;
             }
             System.out.println("No vehicle was found with this ID");

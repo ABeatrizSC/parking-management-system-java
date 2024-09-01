@@ -111,7 +111,7 @@ public class Parking {
     }
 
     public static Vehicle logInAMonthlyPayer(MonthlyPayerDao monthlyPayerDao, String licensePlate, VehicleDao vehicleDao) {
-        while (monthlyPayerDao.findByLicensePlate(licensePlate) == null) {
+        while (vehicleDao.findByLicensePlate(licensePlate) == null) {
             System.out.print("No monthly member with this license plate was found. Try again: ");
             licensePlate = captureAValidLicensePlate();
         }
@@ -121,7 +121,7 @@ public class Parking {
     public static Vehicle registerAMonthlyPayer(MonthlyPayerDao monthlyPayerDao, String licensePlate, Vehicle vehicle) {
         VehicleDao vehicleDao = createVehicleDao();
 
-        if (monthlyPayerDao.findByLicensePlate(licensePlate) != null) {
+        if (vehicleDao.findByLicensePlate(licensePlate) != null) {
             System.out.print("The license plate already has a registration. Enter your license plate again to log in: ");
             licensePlate = captureAValidLicensePlate();
             logInAMonthlyPayer(monthlyPayerDao, licensePlate, vehicleDao);
@@ -153,7 +153,7 @@ public class Parking {
     }
 
     public static Vehicle logInADeliveryTruck(DeliveryTruckDao deliveryTruckDao, String licensePlate, VehicleDao vehicleDao) {
-        while (deliveryTruckDao.findByLicensePlate(licensePlate) == null) {
+        while (vehicleDao.findByLicensePlate(licensePlate) == null) {
             System.out.print("No monthly member with this license plate was found. Try again: ");
             licensePlate = captureAValidLicensePlate();
         }
@@ -163,7 +163,7 @@ public class Parking {
     public static Vehicle registerADeliveryTruck(DeliveryTruckDao deliveryTruckDao, String licensePlate, Vehicle vehicle) {
         VehicleDao vehicleDao = createVehicleDao();
 
-        if (deliveryTruckDao.findByLicensePlate(licensePlate) != null) {
+        if (vehicleDao.findByLicensePlate(licensePlate) != null) {
             System.out.print("The license plate already has a registration. Enter your license plate again to log in: ");
             licensePlate = captureAValidLicensePlate();
             logInADeliveryTruck(deliveryTruckDao, licensePlate, vehicleDao);

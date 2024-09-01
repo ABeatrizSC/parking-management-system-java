@@ -61,7 +61,7 @@ public class MonthlyPayerDaoJDBC implements MonthlyPayerDao {
     }
 
     @Override
-    public MonthlyPayer findByLicensePlate(String licensePlate) {
+    public MonthlyPayer findMonthlyPayerByLicensePlate(String licensePlate) {
         PreparedStatement st = null;
         ResultSet rs = null;
 

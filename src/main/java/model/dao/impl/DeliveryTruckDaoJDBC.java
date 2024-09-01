@@ -59,7 +59,7 @@ public class DeliveryTruckDaoJDBC implements DeliveryTruckDao {
     }
 
     @Override
-    public DeliveryTruck findByLicensePlate(String licensePlate) {
+    public DeliveryTruck findDeliveryTruckByLicensePlate(String licensePlate) {
         PreparedStatement st = null;
         ResultSet rs = null;
 
