@@ -171,7 +171,6 @@ public class VehicleDaoJDBC implements VehicleDao {
     public Vehicle instantiateVehicle(ResultSet rs) throws SQLException {
         Vehicle vehicle = new Vehicle();
         vehicle.setId(rs.getInt("id"));
-        System.out.println("aqui");
         vehicle.setCategory(VehicleCategory.valueOf(rs.getString("category")));
         vehicle.setAccessType(AccessType.valueOf(rs.getString("accessType")));
         vehicle.setSlotSize(rs.getInt("slotSize"));
