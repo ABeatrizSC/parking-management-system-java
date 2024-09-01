@@ -111,7 +111,7 @@ public class Parking {
     }
 
     public static Vehicle logInAMonthlyPayer(MonthlyPayerDao monthlyPayerDao, String licensePlate, VehicleDao vehicleDao) {
-        while (vehicleDao.findByLicensePlate(licensePlate) == null) {
+        while (monthlyPayerDao.findMonthlyPayerByLicensePlate(licensePlate) == null) {
             System.out.print("No monthly member with this license plate was found. Try again: ");
             licensePlate = captureAValidLicensePlate();
         }
@@ -153,7 +153,7 @@ public class Parking {
     }
 
     public static Vehicle logInADeliveryTruck(DeliveryTruckDao deliveryTruckDao, String licensePlate, VehicleDao vehicleDao) {
-        while (vehicleDao.findByLicensePlate(licensePlate) == null) {
+        while (deliveryTruckDao.findDeliveryTruckByLicensePlate(licensePlate) == null) {
             System.out.print("No monthly member with this license plate was found. Try again: ");
             licensePlate = captureAValidLicensePlate();
         }
