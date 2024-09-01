@@ -161,7 +161,6 @@ public class VehicleDaoJDBC implements VehicleDao {
 
             if (rs.next()) {
                 Vehicle vehicle = instantiateVehicle(rs);
-                System.out.println(vehicle);
                 return vehicle;
             }
             System.out.println("No vehicle was found with this ID");
