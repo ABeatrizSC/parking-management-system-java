@@ -1,10 +1,7 @@
 package model.dao;
 
 import db.DB;
-import model.dao.impl.DeliveryTruckDaoJDBC;
-import model.dao.impl.MonthlyPayerDaoJDBC;
-import model.dao.impl.TicketDaoJDBC;
-import model.dao.impl.VehicleDaoJDBC;
+import model.dao.impl.*;
 
 public interface DaoFactory {
     public static VehicleDaoJDBC createVehicleDao(){
@@ -21,5 +18,9 @@ public interface DaoFactory {
 
     public static TicketDaoJDBC createTicketDao(){
         return new TicketDaoJDBC(DB.getConnection());
+    }
+
+    public static ParkingSpaceDao createParkingSpaceDao(){
+        return new ParkingSpaceDaoJDBC(DB.getConnection());
     }
 }
