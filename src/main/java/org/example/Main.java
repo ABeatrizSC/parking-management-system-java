@@ -22,7 +22,7 @@ public class Main {
         VehicleDao vehicleDao = createVehicleDao();
 
         System.out.println("HELLO, DRIVER!");
-        System.out.println("Please, choose what you want:");
+        System.out.println("You are:");
         System.out.println("[1] Entering");
         System.out.println("[2] Exiting");
         int res;
