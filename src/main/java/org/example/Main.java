@@ -56,8 +56,7 @@ public class Main {
                     break;
             }
 
-            Integer selectionedGate = chooseAEntranceGate(sc);
-            operateGate(Gate.GateType.ENTRANCE, vehicle, selectionedGate, vehicleDao);
+            operateGate(Gate.GateType.ENTRANCE, vehicle, vehicleDao, sc);
         } else {
             //exit implementation
         }
