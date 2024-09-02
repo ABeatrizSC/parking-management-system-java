@@ -4,7 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 public enum AccessType {
-    MONTHLY_PLAYER(createCategoriesSet(VehicleCategory.CAR, VehicleCategory.MOTOCYCLE)),
+    MONTHLY_PAYER(createCategoriesSet(VehicleCategory.CAR, VehicleCategory.MOTOCYCLE)),
     TICKET(createCategoriesSet(VehicleCategory.CAR, VehicleCategory.MOTOCYCLE)),
     DELIVERY_TRUCKS(createCategoriesSet(VehicleCategory.DELIVERY_TRUCKS)),
     PUBLIC_SERVICE(createCategoriesSet(VehicleCategory.PUBLIC_SERVICE));

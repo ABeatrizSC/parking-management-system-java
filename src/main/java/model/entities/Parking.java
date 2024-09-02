@@ -5,9 +5,7 @@ import enums.SlotType;
 import enums.VehicleCategory;
 import model.dao.*;
 
-import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static UI.Colors.*;
 import static model.dao.DaoFactory.*;
@@ -176,7 +174,7 @@ public class Parking {
     }
 
     private static Boolean areSpacesValidByAccessType(int[] spaces, Vehicle vehicle) {
-        if (vehicle.getAccessType() == AccessType.MONTHLY_PLAYER) {
+        if (vehicle.getAccessType() == AccessType.MONTHLY_PAYER) {
             for (int space : spaces){
                 if (space < 1 || space > SlotType.MONTHLY.getQuantity()) {
                     System.out.println("These parking spaces are exclusively for casual visitors or don't exist. \nCheck if there is the number of sequential parking spaces required for your vehicle and try again:\n(If there are none, press 1 to exit)");
@@ -240,7 +238,7 @@ public class Parking {
         ParkingSpaceDao parkingSpaceDao = createParkingSpaceDao();
         ParkingSpace parkingSpace;
         for (int id : parkingSpaces) {
-            if(vehicle.getAccessType() == AccessType.MONTHLY_PLAYER) {
+            if(vehicle.getAccessType() == AccessType.MONTHLY_PAYER) {
                 parkingSpace = new ParkingSpace(id, SlotType.MONTHLY, true, vehicle);
             } else {
                 parkingSpace = new ParkingSpace(id, SlotType.CASUAL, true, vehicle);
@@ -253,7 +251,7 @@ public class Parking {
         ParkingSpaceDao parkingSpaceDao = createParkingSpaceDao();
         ParkingSpace parkingSpace;
         for (int id : parkingSpaces) {
-            if(vehicle.getAccessType() == AccessType.MONTHLY_PLAYER) {
+            if(vehicle.getAccessType() == AccessType.MONTHLY_PAYER) {
                 parkingSpace = new ParkingSpace(id, SlotType.MONTHLY, false, null);
             } else {
                 parkingSpace = new ParkingSpace(id, SlotType.CASUAL, false, null);
