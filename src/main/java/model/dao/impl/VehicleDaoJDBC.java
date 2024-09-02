@@ -206,6 +206,8 @@ public class VehicleDaoJDBC implements VehicleDao {
         vehicle.setCategory(VehicleCategory.valueOf(rs.getString("category")));
         vehicle.setAccessType(AccessType.valueOf(rs.getString("accessType")));
         vehicle.setSlotSize(rs.getInt("slotSize"));
+        vehicle.setEntranceGate(rs.getInt("entranceGate"));
+        vehicle.setExitGate(rs.getInt("exitGate"));
 
         return vehicle;
     }

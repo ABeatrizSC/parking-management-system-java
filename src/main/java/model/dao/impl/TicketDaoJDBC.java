@@ -2,7 +2,10 @@ package model.dao.impl;
 
 import db.DB;
 import db.DbException;
+import enums.AccessType;
+import enums.VehicleCategory;
 import model.dao.TicketDao;
+import model.dao.VehicleDao;
 import model.entities.Gate;
 import model.entities.Ticket;
 import model.entities.Vehicle;
@@ -12,6 +15,8 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.stream.Collectors;
+
+import static model.dao.DaoFactory.createVehicleDao;
 
 public class TicketDaoJDBC implements TicketDao {
     private Connection conn;
@@ -57,8 +62,47 @@ public class TicketDaoJDBC implements TicketDao {
     }
 
     @Override
-    public void deleteById(Integer id) {
+    public Ticket findById(Integer id) {
+        PreparedStatement st = null;
+        ResultSet rs = null;
 
+        try {
+            st = conn.prepareStatement("SELECT * FROM ticket WHERE Id = ?");
+
+            st.setInt(1, id);
+
+            rs = st.executeQuery();
+
+            if (rs.next()) {
+                Ticket ticket = instantiateTicket(rs);
+                return ticket;
+            }
+            return null;
+        }
+        catch (SQLException e) {
+            throw new DbException(e.getMessage());
+        }
+        finally {
+            DB.closeStatement(st);
+        }
+    }
+
+    @Override
+    public void deleteById(Integer id) {
+        PreparedStatement st = null;
+        try {
+            st = conn.prepareStatement("DELETE FROM ticket WHERE Id = ?");
+
+            st.setInt(1, id);
+
+            st.executeUpdate();
+        }
+        catch (SQLException e) {
+            throw new DbException(e.getMessage());
+        }
+        finally {
+            DB.closeStatement(st);
+        }
     }
 
     @Override
@@ -100,8 +144,50 @@ public class TicketDaoJDBC implements TicketDao {
     }
 
     @Override
-    public void updateExitInformation(Vehicle vehicle, Ticket ticket) {
+    public void updateExitInformation(Ticket ticket) {
+        PreparedStatement st = null;
+        Time finishHour = Time.valueOf(LocalTime.now());
 
+        try {
+            st = conn.prepareStatement(
+                    "UPDATE ticket "
+                            + "SET finishHour = ?, totalValue = ? "
+                            + "WHERE Id = ? "
+            );
+
+            st.setTime(1, finishHour);
+            st.setDouble(2, ticket.getTotalValue());
+            st.setInt(3, ticket.getId());
+
+
+            int rowsAffected = st.executeUpdate();
+
+            if (rowsAffected < 0) {
+                throw new DbException("Unexpected error! No rows affected!");
+            } else {
+                ticket.setFinishHour(finishHour.toLocalTime());
+            }
+        }
+        catch (SQLException e) {
+            throw new DbException(e.getMessage());
+        }
+        finally {
+            DB.closeStatement(st);
+        }
+    }
+
+    public Ticket instantiateTicket(ResultSet rs) throws SQLException {
+        Ticket ticket = new Ticket();
+        ticket.setId(rs.getInt("id"));
+        ticket.setParkingSpaces(rs.getString("parkingSpaces"));
+        ticket.setStartHour(rs.getTime("startHour").toLocalTime());
+
+        VehicleDao vehicleDao = createVehicleDao();
+        int vehicleId = rs.getInt("vehicle_id");
+        Vehicle vehicle = vehicleDao.findById(vehicleId);
+        ticket.setVehicle(vehicle);
+
+        return ticket;
     }
 
 }

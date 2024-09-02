@@ -309,7 +309,6 @@ public class Parking {
             licensePlate = captureAValidLicensePlate();
         }
         MonthlyPayer monthlyPayer = monthlyPayerDao.findMonthlyPayerByLicensePlate(licensePlate);
-        System.out.println("finById no login: " + vehicleDao.findById(monthlyPayer.getVehicle().getId()));
         return vehicleDao.findById(monthlyPayer.getVehicle().getId());
     }
 
@@ -387,7 +386,6 @@ public class Parking {
         TicketDao ticketDao = createTicketDao();
         VehicleDao vehicleDao = createVehicleDao();
         vehicleDao.insert(vehicle);
-        System.out.println(vehicle);
         Ticket ticket = new Ticket(null, vehicle);
         ticketDao.insert(ticket);
         return ticket;
@@ -442,6 +440,44 @@ public class Parking {
         Vehicle vehicle = vehicleDao.findById(deliveryTruck.getVehicle().getId());
         vehicleDao.finalizeAccess(vehicle);
         emptyParkingSpace(vehicle);
+    }
+
+    public static void finalizeTicketAccess(Scanner sc, Integer exitGate) {
+        TicketDao ticketDao = createTicketDao();
+        VehicleDao vehicleDao = createVehicleDao();
+        Vehicle vehicle;
+        Ticket ticket;
+        Integer ticketId;
+
+        System.out.println("Inform your ticket number:");
+        while(true){
+            ticketId = sc.nextInt();
+            if (ticketDao.findById(ticketId) != null) {
+                break;
+            }
+            System.out.println("No ticket with this number was found. Try again:");
+        }
+
+        ticket = ticketDao.findById(ticketId);
+        vehicle = vehicleDao.findById(ticket.getVehicle().getId());
+        vehicle.setExitGate(exitGate);
+        ticket.setVehicle(vehicle);
+        ticketDao.updateExitInformation(ticket);
+        ticket.calculateTotalValue();
+        System.out.println(ticket);
+        System.out.println("The total value was $" + ticket.getTotalValue() + ". Enter 1 to pay it.");
+        Integer payment;
+
+        while (true) {
+            payment = sc.nextInt();
+            if (payment == 1) {
+                break;
+            }
+            System.out.println("Invalid input. Try again:");
+        }
+        emptyParkingSpace(ticket.getVehicle());
+        ticketDao.deleteById(ticket.getId());
+        vehicleDao.deleteById(ticket.getVehicle().getId());
     }
 }
 

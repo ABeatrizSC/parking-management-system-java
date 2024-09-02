@@ -1,7 +1,7 @@
 package model.entities;
 
+import java.time.Duration;
 import java.time.LocalTime;
-import java.util.Arrays;
 
 import static UI.Colors.ANSI_RED;
 import static UI.Colors.ANSI_RESET;
@@ -10,11 +10,10 @@ public class Ticket {
     private Integer id;
     private LocalTime startHour;
     private LocalTime finishHour;
-    private final Double basicPayment = 5.00;
-    private Double totalValue;
+    private final double BASIC_PAYMENT = 5.00;
+    private final double PRICE_PER_MINUTE = 0.10;
+    private Double totalValue = 0.00;
     private String parkingSpaces;
-    private Integer entranceGate;
-    private Integer exitGate;
     private Vehicle vehicle;
 
     public Ticket(){}
@@ -22,6 +21,13 @@ public class Ticket {
     public Ticket(Integer id, Vehicle vehicle) {
         this.id = id;
         this.vehicle = vehicle;
+    }
+
+    public Ticket(String parkingSpaces, Integer entranceGate, Integer exitGate, Vehicle vehicle, LocalTime startHour, Integer id) {
+        this.parkingSpaces = parkingSpaces;
+        this.vehicle = vehicle;
+        this.startHour = startHour;
+        this.id = id;
     }
 
     public Vehicle getVehicle() {
@@ -48,8 +54,12 @@ public class Ticket {
         this.totalValue = totalValue;
     }
 
-    public Double getBasicPayment() {
-        return basicPayment;
+    public double getBASIC_PAYMENT() {
+        return BASIC_PAYMENT;
+    }
+
+    public double getPRICE_PER_MINUTE() {
+        return PRICE_PER_MINUTE;
     }
 
     public LocalTime getFinishHour() {
@@ -76,20 +86,19 @@ public class Ticket {
         this.id = id;
     }
 
-    public Integer getEntranceGate() {
-        return entranceGate;
-    }
+    public void calculateTotalValue() {
+        Duration duration = Duration.between(startHour, finishHour);
+        long minutesParked = duration.toMinutes();
 
-    public void setEntranceGate(Integer entranceGate) {
-        this.entranceGate = entranceGate;
-    }
+        int slotsOccupied = vehicle.getSlotSize();
 
-    public Integer getExitGate() {
-        return exitGate;
-    }
+        double total = minutesParked * PRICE_PER_MINUTE * slotsOccupied;
 
-    public void setExitGate(Integer exitGate) {
-        this.exitGate = exitGate;
+        if (total <= BASIC_PAYMENT) {
+            total = BASIC_PAYMENT;
+        }
+
+        this.totalValue = total;
     }
 
     @Override
@@ -102,7 +111,7 @@ public class Ticket {
                 .append("Parking Spaces: ").append(parkingSpaces).append("\n")
                 .append("Entrance Gate: ").append(vehicle.getEntranceGate()).append("\n");
 
-        if (finishHour != null && exitGate != null && totalValue != null) {
+        if (finishHour != null && vehicle.getExitGate() != null && totalValue != null) {
             sb.append("Finish Hour: ").append(finishHour).append("\n")
                     .append("Exit Gate: ").append(vehicle.getExitGate()).append("\n")
                     .append("Total Value: ").append(totalValue).append("\n");

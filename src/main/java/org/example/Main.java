@@ -1,16 +1,14 @@
 package org.example;
 
 import enums.AccessType;
-import enums.SlotType;
 import enums.VehicleCategory;
-import model.dao.ParkingSpaceDao;
 import model.dao.VehicleDao;
 import model.entities.*;
 
 import java.util.*;
 
 import static model.dao.DaoFactory.*;
-import static model.entities.Gate.operateGate;
+import static model.entities.Gate.*;
 import static model.entities.Parking.*;
 
 public class Main {
@@ -56,8 +54,10 @@ public class Main {
                     break;
                 case TICKET:
                     ticket = createTicketAccess(vehicle);
+                    break;
                 case PUBLIC_SERVICE:
                     vehicle = capturePublicServiceAccessInfo(vehicle);
+                    break;
             }
 
             int[] parkingSpaces = null;
@@ -66,15 +66,14 @@ public class Main {
                 occupyParkingSpace(parkingSpaces, vehicle);
             }
 
-            operateGate(Gate.GateType.ENTRANCE, vehicle, vehicleDao, sc);
+            operateEntranceGate(vehicle, vehicleDao, sc);
 
             if (accessType == AccessType.TICKET){
                  updateTicketInformation(vehicle, ticket, parkingSpaces);
                 System.out.println(ticket);
             }
         } else {
-            vehicle = new Vehicle(null, vehicleCategory, accessType);
-            operateGate(Gate.GateType.EXIT, vehicle, vehicleDao, sc);
+            Integer exitGate = operateExitGate(sc, vehicleCategory);
 
             switch (accessType){
                 case MONTHLY_PAYER:
@@ -84,6 +83,7 @@ public class Main {
                     finalizeDeliveryTrucksAccess();
                     break;
                 case TICKET:
+                    finalizeTicketAccess(sc, exitGate);
                     break;
                 case PUBLIC_SERVICE:
                     break;

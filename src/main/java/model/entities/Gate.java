@@ -42,30 +42,30 @@ public class Gate {
         return type;
     }
 
-    public static void operateGate(GateType type, Vehicle vehicle, VehicleDao vehicleDao, Scanner sc){
+    public static void operateEntranceGate(Vehicle vehicle, VehicleDao vehicleDao, Scanner sc){
         Integer selectionedGate;
-        if (type == GateType.ENTRANCE) {
-            while (true) {
-                selectionedGate = chooseAEntranceGate(sc);
-                if (vehicle.getCategory().getEntranceGates().contains(selectionedGate.toString())) {
-                    vehicle.setEntranceGate(selectionedGate);
-                    vehicleDao.updateSelectionedGate(vehicle, selectionedGate);
-                    break;
-                }
-                System.out.println("This gate can't be accessed due to your vehicle type. Try another one.");
+        while (true) {
+            selectionedGate = chooseAEntranceGate(sc);
+            if (vehicle.getCategory().getEntranceGates().contains(selectionedGate.toString())) {
+                vehicle.setEntranceGate(selectionedGate);
+                vehicleDao.updateSelectionedGate(vehicle, selectionedGate);
+                break;
             }
-        } else {
-            while(true) {
-                selectionedGate = chooseAExitGate(sc);
-                List<Integer> exitGates = GateType.EXIT.getGateNumbers();
-                if (vehicle.getCategory().getExitGates().contains(exitGates.get(selectionedGate-1).toString())) {
-                    vehicle.setExitGate(selectionedGate);
-                    break;
-                }
-                System.out.println("This gate can't be accessed due to your vehicle type. Try another one.");
-            }
+            System.out.println("This gate can't be accessed due to your vehicle type. Try another one.");
         }
-        vehicle.setEntranceGate(selectionedGate);
+    }
+
+    public static Integer operateExitGate(Scanner sc, VehicleCategory vehicleCategory) {
+        Integer selectionedGate;
+        while(true) {
+            selectionedGate = chooseAExitGate(sc);
+            List<Integer> exitGates = GateType.EXIT.getGateNumbers();
+            if (vehicleCategory.getExitGates().contains(exitGates.get(selectionedGate-1).toString())) {
+                break;
+            }
+            System.out.println("This gate can't be accessed due to your vehicle type. Try another one.");
+        }
+        return selectionedGate;
     }
 
     @Override

@@ -76,7 +76,9 @@ public class Vehicle {
                 "id=" + id +
                 ", category=" + category +
                 ", slotSize=" + slotSize +
-                ", accessType=" + accessType;
+                ", accessType=" + accessType +
+                ", entranceGate=" + entranceGate +
+                ", exitGate=" + exitGate +
+                '}';
     }
-
 }
