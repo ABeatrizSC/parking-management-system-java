@@ -197,15 +197,6 @@ Todas os campos possuem validação, onde:
     - Sendo assim, não é possível adentrar com o veículo se não houver vagas da quantidade necessária OU se não forem sequenciais
     - Também não é possível entrar com valores de vagas que já foram preenchidas
 
-
-### Contribuindo
-Se você quiser contribuir para este projeto, siga as etapas a
-1. Fork o repositório.
-2. Crie uma branch para suas alterações (`git checkout -b min
-3. Faça as alterações e commit (`git commit -am 'Adiciona nova
-4. Push para a branch (`git push origin minha-nova-feature`).
-5. Abra um Pull Request.
-
 ## 📲 Contato
 Para dúvidas ou problemas, entre em contato em:
 * Email: anabeatrizscarmoni@gmail.com
