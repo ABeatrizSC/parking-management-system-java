@@ -361,5 +361,12 @@ public class Parking {
 
         ticketDao.updateEntranceInformation(vehicle, ticket, parkingSpaces);
     }
+
+    public static Vehicle capturePublicServiceAccessInfo(Vehicle vehicle) {
+        VehicleDao vehicleDao = createVehicleDao();
+        vehicleDao.insert(vehicle);
+
+        return vehicle;
+    }
 }
 

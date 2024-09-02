@@ -56,10 +56,16 @@ public class Main {
                     break;
                 case TICKET:
                     ticket = createTicketAccess(vehicle);
+                case PUBLIC_SERVICE:
+                    vehicle = capturePublicServiceAccessInfo(vehicle);
             }
 
-            int[] parkingSpaces = captureValidParkingSpaces(vehicle);
-            occupyParkingSpace(parkingSpaces, vehicle);
+            int[] parkingSpaces = null;
+            if (accessType != AccessType.PUBLIC_SERVICE) {
+                parkingSpaces = captureValidParkingSpaces(vehicle);
+                occupyParkingSpace(parkingSpaces, vehicle);
+            }
+
             operateGate(Gate.GateType.ENTRANCE, vehicle, vehicleDao, sc);
 
             if (accessType == AccessType.TICKET){
