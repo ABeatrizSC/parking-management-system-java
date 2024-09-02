@@ -5,10 +5,7 @@ import enums.SlotType;
 import enums.VehicleCategory;
 import model.dao.ParkingSpaceDao;
 import model.dao.VehicleDao;
-import model.entities.Gate;
-import model.entities.Parking;
-import model.entities.ParkingSpace;
-import model.entities.Vehicle;
+import model.entities.*;
 
 import java.util.*;
 
@@ -22,6 +19,7 @@ public class Main {
         VehicleCategory vehicleCategory;
         AccessType accessType;
         Vehicle vehicle;
+        Ticket ticket = new Ticket();
 
         VehicleDao vehicleDao = createVehicleDao();
 
@@ -57,12 +55,17 @@ public class Main {
                     vehicle = captureDeliveryTrucksAccessInfo(sc, vehicle);
                     break;
                 case TICKET:
-                    break;
+                    ticket = createTicketAccess(vehicle);
             }
 
             int[] parkingSpaces = captureValidParkingSpaces(vehicle);
             occupyParkingSpace(parkingSpaces, vehicle);
             operateGate(Gate.GateType.ENTRANCE, vehicle, vehicleDao, sc);
+
+            if (accessType == AccessType.TICKET){
+                 updateTicketInformation(vehicle, ticket, parkingSpaces);
+                System.out.println(ticket);
+            }
         } else {
             //exit implementation
         }

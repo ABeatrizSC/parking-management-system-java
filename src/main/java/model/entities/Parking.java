@@ -5,7 +5,9 @@ import enums.SlotType;
 import enums.VehicleCategory;
 import model.dao.*;
 
+import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static UI.Colors.*;
 import static model.dao.DaoFactory.*;
@@ -342,6 +344,22 @@ public class Parking {
             deliveryTruckDao.insert(deliveryTruck);
         }
         return vehicle;
+    }
+
+    public static Ticket createTicketAccess(Vehicle vehicle) {
+        TicketDao ticketDao = createTicketDao();
+        VehicleDao vehicleDao = createVehicleDao();
+        vehicleDao.insert(vehicle);
+        System.out.println(vehicle);
+        Ticket ticket = new Ticket(null, vehicle);
+        ticketDao.insert(ticket);
+        return ticket;
+    }
+
+    public static void updateTicketInformation(Vehicle vehicle, Ticket ticket, int[] parkingSpaces){
+        TicketDao ticketDao = createTicketDao();
+
+        ticketDao.updateEntranceInformation(vehicle, ticket, parkingSpaces);
     }
 }
 
