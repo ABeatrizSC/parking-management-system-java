@@ -81,6 +81,7 @@ public class Main {
                     finalizeMonthlyPayerAccess();
                     break;
                 case DELIVERY_TRUCKS:
+                    finalizeDeliveryTrucksAccess();
                     break;
                 case TICKET:
                     break;

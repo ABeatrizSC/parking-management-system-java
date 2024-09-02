@@ -424,5 +424,24 @@ public class Parking {
         vehicleDao.finalizeAccess(vehicle);
         emptyParkingSpace(vehicle);
     }
+
+    public static void finalizeDeliveryTrucksAccess() {
+        VehicleDao vehicleDao = createVehicleDao();
+        DeliveryTruckDao deliveryTruckDao = createDeliveryTruckDao();
+
+        System.out.print("Enter your license plate: ");
+        String licensePlate;
+        while (true) {
+            licensePlate = captureAValidLicensePlate();
+            if (deliveryTruckDao.findDeliveryTruckByLicensePlate(licensePlate) != null) {
+                break;
+            }
+            System.out.print("No monthly member with this license plate was found. Try again: ");
+        }
+        DeliveryTruck deliveryTruck = deliveryTruckDao.findDeliveryTruckByLicensePlate(licensePlate);
+        Vehicle vehicle = vehicleDao.findById(deliveryTruck.getVehicle().getId());
+        vehicleDao.finalizeAccess(vehicle);
+        emptyParkingSpace(vehicle);
+    }
 }
 
