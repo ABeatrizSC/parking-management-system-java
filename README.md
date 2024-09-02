@@ -186,9 +186,16 @@ Todas os campos possuem validação, onde:
     -  Não é possível criar veículos com a mesma placa
     -  As placas deverao ser de tamanho 7 a 8, e todas ao convertidas para caixa alta ao serem salvas no banco
 
-2. **Cancelas**
+3. **Cancelas**
     - As cancelas possuem validação para permitirem a entrada somente de veículos autorizados a passarem por elas (detalhes na descrição do desafio)
     - Se a primeira opção marcada for 'Entering', na hora de escolher as cancelas só aparecerão as responsáveis pela entrada de veículo. O mesmo acontece quando selecionado a opção "Exiting"
+    - 
+4. **Vagas**
+    - Cada categoria de veículo ocupa um determinado numero de vagas (descrito no desafio)
+    - Não é possível veículos que não são MONTHLY PAYERS estacionarem nas vagas de numero 1 a 200, e vice-versa.
+    - O usuário deverá inserir o número de vagas correspondente a quanto precisa, sendo que elas deverão ser **sequenciais**, ou seja, um carro que precisa de 2 vagas não poderá estacionar na vaga 201 e 203
+    - Sendo assim, não é possível adentrar com o veículo se não houver vagas da quantidade necessária OU se não forem sequenciais
+    - Também não é possível entrar com valores de vagas que já foram preenchidas
 
 
 ### Contribuindo
