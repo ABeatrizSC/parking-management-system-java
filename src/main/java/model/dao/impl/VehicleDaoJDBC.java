@@ -172,6 +172,34 @@ public class VehicleDaoJDBC implements VehicleDao {
         }
     }
 
+    @Override
+    public void finalizeAccess(Vehicle vehicle) {
+        PreparedStatement st = null;
+        try {
+            st = conn.prepareStatement(
+                    "UPDATE vehicles "
+                            + "SET entranceGate = ?, exitGate = ? "
+                            + "WHERE Id = ? "
+            );
+
+            st.setNull(1, java.sql.Types.INTEGER);
+            st.setNull(2, java.sql.Types.INTEGER);
+            st.setInt(3, vehicle.getId());
+
+            int rowsAffected = st.executeUpdate();
+
+            if (rowsAffected < 0) {
+                throw new DbException("Unexpected error! No rows affected!");
+            }
+        }
+        catch (SQLException e) {
+            throw new DbException(e.getMessage());
+        }
+        finally {
+            DB.closeStatement(st);
+        }
+    }
+
     public Vehicle instantiateVehicle(ResultSet rs) throws SQLException {
         Vehicle vehicle = new Vehicle();
         vehicle.setId(rs.getInt("id"));

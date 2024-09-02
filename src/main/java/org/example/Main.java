@@ -48,7 +48,7 @@ public class Main {
         if (res == 1){
             vehicle = new Vehicle(null, vehicleCategory, accessType);
             switch (accessType){
-                case MONTHLY_PLAYER:
+                case MONTHLY_PAYER:
                     vehicle = captureMonthlyPayerAccessInfo(sc, vehicle);
                     break;
                 case DELIVERY_TRUCKS:
@@ -73,7 +73,20 @@ public class Main {
                 System.out.println(ticket);
             }
         } else {
-            //exit implementation
+            vehicle = new Vehicle(null, vehicleCategory, accessType);
+            operateGate(Gate.GateType.EXIT, vehicle, vehicleDao, sc);
+
+            switch (accessType){
+                case MONTHLY_PAYER:
+                    finalizeMonthlyPayerAccess();
+                    break;
+                case DELIVERY_TRUCKS:
+                    break;
+                case TICKET:
+                    break;
+                case PUBLIC_SERVICE:
+                    break;
+            }
         }
 
         sc.close();

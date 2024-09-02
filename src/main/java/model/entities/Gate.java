@@ -6,6 +6,7 @@ import model.dao.VehicleDao;
 import java.util.*;
 
 import static model.entities.Parking.chooseAEntranceGate;
+import static model.entities.Parking.chooseAExitGate;
 
 public class Gate {
     private Integer id;
@@ -48,7 +49,6 @@ public class Gate {
                 selectionedGate = chooseAEntranceGate(sc);
                 if (vehicle.getCategory().getEntranceGates().contains(selectionedGate.toString())) {
                     vehicle.setEntranceGate(selectionedGate);
-                    //occupyParkingSpace();
                     vehicleDao.updateSelectionedGate(vehicle, selectionedGate);
                     break;
                 }
@@ -56,10 +56,10 @@ public class Gate {
             }
         } else {
             while(true) {
-                selectionedGate = chooseAEntranceGate(sc);
-                if (vehicle.getCategory().getExitGates().contains(selectionedGate.toString())) {
+                selectionedGate = chooseAExitGate(sc);
+                List<Integer> exitGates = GateType.EXIT.getGateNumbers();
+                if (vehicle.getCategory().getExitGates().contains(exitGates.get(selectionedGate-1).toString())) {
                     vehicle.setExitGate(selectionedGate);
-                    //emptyParkingSpace();
                     break;
                 }
                 System.out.println("This gate can't be accessed due to your vehicle type. Try another one.");

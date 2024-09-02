@@ -14,6 +14,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import static model.dao.DaoFactory.createVehicleDao;
 
@@ -121,6 +123,33 @@ public class ParkingSpaceDaoJDBC implements ParkingSpaceDao {
         }
         finally {
             DB.closeStatement(st);
+        }
+    }
+
+    @Override
+    public int[] findByVehicle(Integer id) {
+        PreparedStatement st = null;
+        ResultSet rs = null;
+
+        try {
+            st = conn.prepareStatement(
+                    "SELECT id FROM parkingSpace WHERE vehicle_id = ?"
+            );
+            st.setInt(1, id);
+
+            rs = st.executeQuery();
+
+            List<Integer> parkingSpaces = new ArrayList<>();
+            while (rs.next()) {
+                parkingSpaces.add(rs.getInt("id"));
+            }
+
+            return parkingSpaces.stream().mapToInt(i -> i).toArray();
+        } catch (SQLException e) {
+            throw new DbException(e.getMessage());
+        } finally {
+            DB.closeStatement(st);
+            DB.closeResultSet(rs);
         }
     }
 

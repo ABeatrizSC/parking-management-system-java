@@ -8,4 +8,5 @@ public interface VehicleDao {
     void deleteById(Integer id);
     Vehicle findById(Integer id);
     Vehicle findByLicensePlate(String licensePLate);
+    void finalizeAccess(Vehicle vehicle);
 }

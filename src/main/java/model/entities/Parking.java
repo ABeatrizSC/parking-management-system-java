@@ -121,6 +121,29 @@ public class Parking {
         return selectionedGate;
     }
 
+    public static Integer chooseAExitGate(Scanner sc){
+        Integer selectionedGate;
+
+        System.out.println("Choose a gate:");
+        List<Integer> availableGates = new ArrayList<>();
+        availableGates = Gate.GateType.EXIT.getGateNumbers();
+        int count = 1;
+        for (Integer gate : availableGates) {
+            System.out.println("[" + count + "]" + " CANCELA " + gate);
+            count++;
+        }
+
+        while(true){
+            selectionedGate = sc.nextInt();
+            if (selectionedGate >= 1 && selectionedGate <= availableGates.size()) {
+                break;
+            }
+            System.out.println("Invalid gate number. Please, try again:");
+        }
+
+        return selectionedGate;
+    }
+
     public static String captureAValidLicensePlate() {
         Scanner sc = new Scanner(System.in);
         String newLicensePlate;
@@ -247,9 +270,10 @@ public class Parking {
         }
     }
 
-    public static void emptyParkingSpace(int[] parkingSpaces, Vehicle vehicle){
+    public static void emptyParkingSpace(Vehicle vehicle){
         ParkingSpaceDao parkingSpaceDao = createParkingSpaceDao();
         ParkingSpace parkingSpace;
+        int[] parkingSpaces = parkingSpaceDao.findByVehicle(vehicle.getId());
         for (int id : parkingSpaces) {
             if(vehicle.getAccessType() == AccessType.MONTHLY_PAYER) {
                 parkingSpace = new ParkingSpace(id, SlotType.MONTHLY, false, null);
@@ -284,16 +308,24 @@ public class Parking {
             System.out.print("No monthly member with this license plate was found. Try again: ");
             licensePlate = captureAValidLicensePlate();
         }
-        return vehicleDao.findByLicensePlate(licensePlate);
+        MonthlyPayer monthlyPayer = monthlyPayerDao.findMonthlyPayerByLicensePlate(licensePlate);
+        System.out.println("finById no login: " + vehicleDao.findById(monthlyPayer.getVehicle().getId()));
+        return vehicleDao.findById(monthlyPayer.getVehicle().getId());
     }
 
     public static Vehicle registerAMonthlyPayer(MonthlyPayerDao monthlyPayerDao, String licensePlate, Vehicle vehicle) {
         VehicleDao vehicleDao = createVehicleDao();
 
         if (vehicleDao.findByLicensePlate(licensePlate) != null) {
-            System.out.print("The license plate already has a registration. Enter your license plate again to log in: ");
-            licensePlate = captureAValidLicensePlate();
-            logInAMonthlyPayer(monthlyPayerDao, licensePlate, vehicleDao);
+            if (vehicleDao.findByLicensePlate(licensePlate).getAccessType() == AccessType.DELIVERY_TRUCKS) {
+                System.out.println("This license plate has already been registered in another category.");
+                System.out.println("Program execution will terminate. Try again.");
+                System.exit(1);
+            } else {
+                System.out.print("The license plate already has a registration. Enter your license plate again to log in: ");
+                licensePlate = captureAValidLicensePlate();
+                vehicle = logInAMonthlyPayer(monthlyPayerDao, licensePlate, vehicleDao);
+            }
         } else {
             vehicleDao.insert(vehicle);
             MonthlyPayer monthlyPayer = new MonthlyPayer(null, licensePlate, vehicle);
@@ -326,16 +358,23 @@ public class Parking {
             System.out.print("No monthly member with this license plate was found. Try again: ");
             licensePlate = captureAValidLicensePlate();
         }
-        return vehicleDao.findByLicensePlate(licensePlate);
+        DeliveryTruck deliveryTruck = deliveryTruckDao.findDeliveryTruckByLicensePlate(licensePlate);
+        return vehicleDao.findById(deliveryTruck.getVehicle().getId());
     }
 
     public static Vehicle registerADeliveryTruck(DeliveryTruckDao deliveryTruckDao, String licensePlate, Vehicle vehicle) {
         VehicleDao vehicleDao = createVehicleDao();
 
         if (vehicleDao.findByLicensePlate(licensePlate) != null) {
-            System.out.print("The license plate already has a registration. Enter your license plate again to log in: ");
-            licensePlate = captureAValidLicensePlate();
-            logInADeliveryTruck(deliveryTruckDao, licensePlate, vehicleDao);
+            if (vehicleDao.findByLicensePlate(licensePlate).getAccessType() == AccessType.MONTHLY_PAYER) {
+                System.out.println("This license plate has already been registered in another category.");
+                System.out.println("Program execution will terminate. Try again.");
+                System.exit(1);
+            } else {
+                System.out.print("The license plate already has a registration. Enter your license plate again to log in: ");
+                licensePlate = captureAValidLicensePlate();
+                vehicle = logInADeliveryTruck(deliveryTruckDao, licensePlate, vehicleDao);
+            }
         } else {
             vehicleDao.insert(vehicle);
             DeliveryTruck deliveryTruck = new DeliveryTruck(null, licensePlate, vehicle);
@@ -365,6 +404,25 @@ public class Parking {
         vehicleDao.insert(vehicle);
 
         return vehicle;
+    }
+
+    public static void finalizeMonthlyPayerAccess() {
+        VehicleDao vehicleDao = createVehicleDao();
+        MonthlyPayerDao monthlyPayerDao = createMonthlyPayerDao();
+
+        System.out.print("Enter your license plate: ");
+        String licensePlate;
+        while (true) {
+            licensePlate = captureAValidLicensePlate();
+            if (monthlyPayerDao.findMonthlyPayerByLicensePlate(licensePlate) != null) {
+                break;
+            }
+            System.out.print("No monthly member with this license plate was found. Try again: ");
+        }
+        MonthlyPayer monthlyPayer = monthlyPayerDao.findMonthlyPayerByLicensePlate(licensePlate);
+        Vehicle vehicle = vehicleDao.findById(monthlyPayer.getVehicle().getId());
+        vehicleDao.finalizeAccess(vehicle);
+        emptyParkingSpace(vehicle);
     }
 }
 
