@@ -57,15 +57,15 @@ public class Gate {
 
     public static Integer operateExitGate(Scanner sc, VehicleCategory vehicleCategory) {
         Integer selectionedGate;
+        List<Integer> exitGates = GateType.EXIT.getGateNumbers();
         while(true) {
             selectionedGate = chooseAExitGate(sc);
-            List<Integer> exitGates = GateType.EXIT.getGateNumbers();
             if (vehicleCategory.getExitGates().contains(exitGates.get(selectionedGate-1).toString())) {
                 break;
             }
             System.out.println("This gate can't be accessed due to your vehicle type. Try another one.");
         }
-        return selectionedGate;
+        return exitGates.get(selectionedGate-1);
     }
 
     @Override

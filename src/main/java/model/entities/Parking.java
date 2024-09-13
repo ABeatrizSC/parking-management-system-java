@@ -106,7 +106,7 @@ public class Parking {
         availableGates = Gate.GateType.ENTRANCE.getGateNumbers();
         int count = 1;
         for (Integer gate : availableGates) {
-            System.out.println("[" + count + "]" + " CANCELA " + gate);
+            System.out.println("[" + count + "]" + " GATE " + gate);
             count++;
         }
 
@@ -129,7 +129,7 @@ public class Parking {
         availableGates = Gate.GateType.EXIT.getGateNumbers();
         int count = 1;
         for (Integer gate : availableGates) {
-            System.out.println("[" + count + "]" + " CANCELA " + gate);
+            System.out.println("[" + count + "]" + " GATE " + gate);
             count++;
         }
 
