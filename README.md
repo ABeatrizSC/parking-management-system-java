@@ -101,10 +101,6 @@ Siga os passos abaixo para configurar o projeto no seu ambiente
 
  3. **Execute o projeto**
 
- ```bash
- mvn spring-boot:run
- ```
-
 ### Criação das 500 vagas
 Como o desafio propôs o gerenciamento de 500 vagas, uma forma que pensei em criá-las rapidamente foi copiando o código feito abaixo e executá-lo somente uma vez na classe Main:
 
