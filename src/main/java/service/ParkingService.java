@@ -1,16 +1,17 @@
-package model.entities;
+package service;
 
 import enums.AccessType;
 import enums.SlotType;
 import enums.VehicleCategory;
 import model.dao.*;
+import model.entities.*;
 
 import java.util.*;
 
 import static UI.Colors.*;
 import static model.dao.DaoFactory.*;
 
-public class Parking {
+public class ParkingService {
     public static void printParkingSpaces(ParkingSpaceDao parkingSpaceDao) {
         for (int i = 1; i <= 500; i++) {
             String formattedNumber = String.format("%3d", i);

@@ -5,8 +5,8 @@ import model.dao.VehicleDao;
 
 import java.util.*;
 
-import static model.entities.Parking.chooseAEntranceGate;
-import static model.entities.Parking.chooseAExitGate;
+import static service.ParkingService.chooseAEntranceGate;
+import static service.ParkingService.chooseAExitGate;
 
 public class Gate {
     private Integer id;

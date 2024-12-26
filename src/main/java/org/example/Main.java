@@ -9,7 +9,7 @@ import java.util.*;
 
 import static model.dao.DaoFactory.*;
 import static model.entities.Gate.*;
-import static model.entities.Parking.*;
+import static service.ParkingService.*;
 
 public class Main {
     public static void main(String[] args) {
