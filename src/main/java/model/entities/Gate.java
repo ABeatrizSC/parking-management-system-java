@@ -3,10 +3,13 @@ package model.entities;
 import enums.VehicleCategory;
 import model.dao.VehicleDao;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+import java.util.Scanner;
 
-import static model.entities.Parking.chooseAEntranceGate;
-import static model.entities.Parking.chooseAExitGate;
+import static service.ParkingService.chooseAEntranceGate;
+import static service.ParkingService.chooseAExitGate;
 
 public class Gate {
     private Integer id;
@@ -57,15 +60,15 @@ public class Gate {
 
     public static Integer operateExitGate(Scanner sc, VehicleCategory vehicleCategory) {
         Integer selectionedGate;
+        List<Integer> exitGates = GateType.EXIT.getGateNumbers();
         while(true) {
             selectionedGate = chooseAExitGate(sc);
-            List<Integer> exitGates = GateType.EXIT.getGateNumbers();
             if (vehicleCategory.getExitGates().contains(exitGates.get(selectionedGate-1).toString())) {
                 break;
             }
             System.out.println("This gate can't be accessed due to your vehicle type. Try another one.");
         }
-        return selectionedGate;
+        return exitGates.get(selectionedGate-1);
     }
 
     @Override
