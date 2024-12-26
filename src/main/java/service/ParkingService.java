@@ -206,7 +206,7 @@ public class Parking {
             }
         } else {
             for (int space : spaces){
-                if (space < 201 || space > SlotType.CASUAL.getQuantity()) {
+                if (space < 201 || space > SlotType.CASUAL.getQuantity() + SlotType.MONTHLY.getQuantity()) {
                     System.out.println("These parking spaces are exclusive to monthly members or don't exist. \nCheck if there is the number of sequential parking spaces required for your vehicle and try again:\n(If there are none, press 1 to exit)");
                     return false;
                 }

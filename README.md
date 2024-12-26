@@ -1,5 +1,5 @@
 # Sistema de Gestão de Estacionamento
-Projeto dedicado ao desenvolvimento de um sistema de gestão de estacionamento em função do desafio 1 do programa de bolsas da Compass Uol Spring Boot - AWS - Ago/2024.
+Projeto dedicado ao desenvolvimento de um sistema de gestão de estacionamento em função do desafio 1 do programa de bolsas da Compass Uol AWS_SPRINGBOOT_AGO/24.
 
 ## Desafio proposto
 
@@ -78,30 +78,50 @@ Certifique-se de ter as seguintes ferramentas instaladas e configuradas:
 **IDE utilizada no desenvolvimento: IntelliJ IDEA Community Edition 2024.2**
 
 ## Execução do Projeto
+### Criação do banco de dados no MySQL Workbench
+```sql
+CREATE DATABASE `parking-management-system-java-db`;
+ ```
+
+### Clonagem e execução
 Siga os passos abaixo para configurar o projeto no seu ambiente
 1. **Clone o repositório**
 ```bash
- git clone https://github.com/ABeatrizSC/sistema-gestao-estacionamento.git 
+ git clone https://github.com/ABeatrizSC/parking-management-system-java.git 
  ```
 ```bash
   cd sistema-gestao-estacionamento 
  ```
 
-2. **Compile o projeto**
+2. **Instale as dependências**
 
  ```bash
  mvn clean install
  ```
 
  3. **Execute o projeto**
- Para executar o projeto, use o comando:
 
  ```bash
- mvn exec:java -Dexec.mainClass="com.exemplo.Main"
+ mvn spring-boot:run
  ```
 
-### Criação do banco de dados 
-No MySQL Workbench, execute os seguintes códigos SQL para criar o banco de dados completo do sistema:
+### Criação das 500 vagas
+Como o desafio propôs o gerenciamento de 500 vagas, uma forma que pensei em criá-las rapidamente foi copiando o código feito abaixo e executá-lo somente uma vez na classe Main:
+
+ ```java
+ParkingSpace monthlyParkingSpace = new ParkingSpace(null, SlotType.MONTHLY, false, null);
+ParkingSpace casualParkingSpace = new ParkingSpace(null, SlotType.CASUAL, false, null);
+ParkingSpaceDao parkingSpaceDao = createParkingSpaceDao();
+for (int i = 1; i <= 200; i++) {
+    parkingSpaceDao.insert(monthlyParkingSpace);
+}
+for (int i = 1; i <= 300; i++) {
+    parkingSpaceDao.insert(casualParkingSpace);
+}
+ ```
+
+## Script do banco de dados
+O FlyWay no momento da execução é responsável por criar as tabelas abaixo automaticamente:
 
 ```sql
 CREATE TABLE IF NOT EXISTS `vehicles` (   
@@ -115,36 +135,36 @@ CREATE TABLE IF NOT EXISTS `vehicles` (
     `exitGatesAvailable` VARCHAR(100) NULL 
 );
 
-CREATE TABLE IF NOT EXISTS `monthlyPayer` (   
+CREATE TABLE IF NOT EXISTS `monthlyPayers` (   
     `id` INT NOT NULL PRIMARY KEY AUTO_INCREMENT,   
     `licensePlate` VARCHAR(100) NULL,   
     `valuePerMonth` DOUBLE NULL,   
     `vehicle_id` INT NOT NULL
 );
 
-ALTER TABLE `monthlyPayer` 
+ALTER TABLE `monthlyPayers` 
 ADD FOREIGN KEY (`vehicle_id`) REFERENCES `vehicles`(`id`);
 
-CREATE TABLE IF NOT EXISTS `deliveryTruck` (   
+CREATE TABLE IF NOT EXISTS `deliveryTrucks` (   
     `id` INT NOT NULL PRIMARY KEY AUTO_INCREMENT,   
     `licensePlate` VARCHAR(100) NULL,   
     `vehicle_id` INT NOT NULL
 );
 
-ALTER TABLE `deliveryTruck` 
+ALTER TABLE `deliveryTrucks` 
 ADD FOREIGN KEY (`vehicle_id`) REFERENCES `vehicles`(`id`);
 
-CREATE TABLE IF NOT EXISTS `parkingSpace` (
+CREATE TABLE IF NOT EXISTS `parkingSpaces` (
     `id` INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
     `isOccupied` BIT(2) NULL,
     `slotType` VARCHAR(100) NULL,
     `vehicle_id` INT 
 );
 
-ALTER TABLE `parkingSpace` 
+ALTER TABLE `parkingSpaces` 
 ADD FOREIGN KEY (`vehicle_id`) REFERENCES `vehicles`(`id`);
 
-CREATE TABLE IF NOT EXISTS `ticket` (
+CREATE TABLE IF NOT EXISTS `tickets` (
     `id` INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
     `startHour` TIME NULL,
     `finishHour` TIME NULL,
@@ -153,51 +173,36 @@ CREATE TABLE IF NOT EXISTS `ticket` (
     `vehicle_id` INT NOT NULL
 );
 
-ALTER TABLE `ticket` 
+ALTER TABLE `tickets` 
 ADD FOREIGN KEY (`vehicle_id`) REFERENCES `vehicles`(`id`);
 ```
 
-### Criação das 500 vagas
-Como o desafio propôs o gerenciamento de 500 vagas, o código abaixo irá criar automaticamente as 500 vagas no banco de dados.
-Para isso, comente todo o código que está dentro do método main, cole o código abaixo e rode o projeto uma vez.
-Depois, basta removê-lo e retirar o comentário dos outros códigos.
- ```java
-ParkingSpace monthlyParkingSpace = new ParkingSpace(null, SlotType.MONTHLY, false, null);
-ParkingSpace casualParkingSpace = new ParkingSpace(null, SlotType.CASUAL, false, null);
-ParkingSpaceDao parkingSpaceDao = createParkingSpaceDao();
-for (int i = 1; i <= 200; i++) {
-    parkingSpaceDao.insert(monthlyParkingSpace);
-}
-for (int i = 1; i <= 300; i++) {
-    parkingSpaceDao.insert(casualParkingSpace);
-}
- ```
+## Como navegar/Utilizar o sistema
+O menu é composto por opções que poderão ser selecionadas a partir de um número referenciado antes da opção ou então por um campo personalizado de acordo com a opção desejada pelo usuário.
 
-### Utilizando o Sistema
-Para utilizar o sistema, o todo o menu é composto por opções que poderão ser selecionadas a partir de uma letra referenciada antes da opção ou então personalizadas de acordo com a opção desejada pelo usuário.
-Todas os campos possuem validação, onde:
+### Validações de entrada
 1. **Veículos**
-  - Só serão categorias de veículos existentes no sistema (CAR, MOTOCYCLE, DELIVERY_TRUCKS e PUBLIC_SERVICE)
-  - Se a categoria escolhida for CAR e MOTOCYCLE, o usuário é encaminhado para escolher os tipos de acessos disponíveis (MONTHLY PAYER ou TICKET (avulso))
-  - Se não, os marcados como PUBLIC SERVICE serão encaminhados diretamente à escolha das vagas e os de DELIVERY TRUCKS para se registrar ou fazer login
+  - Só serão aceitas categorias de veículos existentes no sistema (CAR, MOTOCYCLE, DELIVERY_TRUCKS e PUBLIC_SERVICE);
+  - Se a categoria escolhida for CAR e MOTOCYCLE, o usuário é encaminhado para escolher os tipos de acessos disponíveis a estes (MONTHLY PAYER ou TICKET (CASUAL/avulso));
+  - Se não, os marcados como PUBLIC SERVICE serão encaminhados diretamente à escolha das vagas e os de categoria DELIVERY TRUCKS para se registrar ou fazer "login".
 
 2. **Placas**
-    - Apenas as categorias de acesso MONTHLY PAYER e DELIVERY TRUCK poderão fazer o registro de placas
-    -  Não é possível criar veículos com a mesma placa
-    -  As placas deverao ser de tamanho 7 a 8, e todas ao convertidas para caixa alta ao serem salvas no banco
+    - Apenas as categorias de acesso MONTHLY PAYER e DELIVERY TRUCK farão o registro de placas;
+    -  Não é possível criar veículos com a mesma placa;
+    -  As placas deverão ter de 7 à 8 caracteres.
 
 3. **Cancelas**
-    - As cancelas possuem validação para permitirem a entrada somente de veículos autorizados a passarem por elas (detalhes na descrição do desafio)
-    - Se a primeira opção marcada for 'Entering', na hora de escolher as cancelas só aparecerão as responsáveis pela entrada de veículo. O mesmo acontece quando selecionado a opção "Exiting"
+    - As cancelas possuem validação para permitirem a entrada somente de veículos autorizados a passarem por elas (detalhes na descrição do desafio);
+    - Se a primeira opção marcada for 'Entering', na hora de escolher as cancelas só aparecerão as responsáveis pelas entradas de veículos. O mesmo acontece quando selecionado a opção "Exiting".
     - 
 4. **Vagas**
-    - Cada categoria de veículo ocupa um determinado numero de vagas (descrito no desafio)
-    - Não é possível veículos que não são MONTHLY PAYERS estacionarem nas vagas de numero 1 a 200, e vice-versa.
-    - O usuário deverá inserir o número de vagas correspondente a quanto precisa, sendo que elas deverão ser **sequenciais**, ou seja, um carro que precisa de 2 vagas não poderá estacionar na vaga 201 e 203
-    - Sendo assim, não é possível adentrar com o veículo se não houver vagas da quantidade necessária OU se não forem sequenciais
-    - Também não é possível entrar com valores de vagas que já foram preenchidas
+    - Cada categoria de veículo ocupa um determinado numero de vagas (descrito no desafio), ou seja, deverá informar o número necessário de vagas na hora de escolhê-las;
+    - As vagas escolhidas deverão ser números **sequenciais**;
+    - Sendo assim, não é possível adentrar com o veículo se não houver vagas da quantidade necessária OU se não forem sequenciais;
+    - Não é possível veículos que são MONTHLY PAYERS estacionarem nas vagas de veículos CASUAL e vice-versa.
 
-## 📲 Contato
-Para dúvidas ou problemas, entre em contato em:
-* Email: anabeatrizscarmoni@gmail.com
-* GitHub: github.com/ABeatrizSC
+## Contato
+* GitHub: [ABeatrizSC](https://github.com/ABeatrizSC)
+* Linkedin: [Ana Beatriz Santucci Carmoni](www.linkedin.com/in/ana-carmoni)
+* Email: [anabeatrizscarmoni@gmail.com](mailto:anabeatrizscarmoni@gmail.com)
+
