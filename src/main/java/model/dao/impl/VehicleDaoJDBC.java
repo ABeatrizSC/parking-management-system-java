@@ -8,7 +8,10 @@ import model.dao.VehicleDao;
 import model.entities.Gate;
 import model.entities.Vehicle;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class VehicleDaoJDBC implements VehicleDao {
 

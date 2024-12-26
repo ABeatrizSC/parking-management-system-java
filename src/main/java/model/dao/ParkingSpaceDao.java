@@ -1,7 +1,6 @@
 package model.dao;
 
 import model.entities.ParkingSpace;
-import model.entities.Vehicle;
 
 public interface ParkingSpaceDao {
     void update(ParkingSpace parkingSpace);

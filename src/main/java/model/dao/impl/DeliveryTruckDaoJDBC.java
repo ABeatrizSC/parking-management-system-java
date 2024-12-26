@@ -5,7 +5,6 @@ import db.DbException;
 import model.dao.DeliveryTruckDao;
 import model.dao.VehicleDao;
 import model.entities.DeliveryTruck;
-import model.entities.DeliveryTruck;
 import model.entities.Vehicle;
 
 import java.sql.Connection;

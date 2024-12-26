@@ -3,13 +3,33 @@ package service;
 import enums.AccessType;
 import enums.SlotType;
 import enums.VehicleCategory;
-import model.dao.*;
-import model.entities.*;
+import model.dao.DeliveryTruckDao;
+import model.dao.MonthlyPayerDao;
+import model.dao.ParkingSpaceDao;
+import model.dao.TicketDao;
+import model.dao.VehicleDao;
+import model.entities.DeliveryTruck;
+import model.entities.Gate;
+import model.entities.MonthlyPayer;
+import model.entities.ParkingSpace;
+import model.entities.Ticket;
+import model.entities.Vehicle;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+import java.util.Scanner;
 
-import static UI.Colors.*;
-import static model.dao.DaoFactory.*;
+import static UI.Colors.ANSI_BLUE;
+import static UI.Colors.ANSI_RED;
+import static UI.Colors.ANSI_RESET;
+import static UI.Colors.ANSI_YELLOW;
+import static model.dao.DaoFactory.createDeliveryTruckDao;
+import static model.dao.DaoFactory.createMonthlyPayerDao;
+import static model.dao.DaoFactory.createParkingSpaceDao;
+import static model.dao.DaoFactory.createTicketDao;
+import static model.dao.DaoFactory.createVehicleDao;
 
 public class ParkingService {
     public static void printParkingSpaces(ParkingSpaceDao parkingSpaceDao) {

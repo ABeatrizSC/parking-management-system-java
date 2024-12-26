@@ -3,9 +3,10 @@ package org.example;
 import enums.AccessType;
 import enums.VehicleCategory;
 import model.dao.VehicleDao;
-import model.entities.*;
+import model.entities.Ticket;
+import model.entities.Vehicle;
 
-import java.util.*;
+import java.util.Scanner;
 
 import static model.dao.DaoFactory.*;
 import static model.entities.Gate.*;

@@ -2,16 +2,16 @@ package model.dao.impl;
 
 import db.DB;
 import db.DbException;
-import enums.AccessType;
-import enums.VehicleCategory;
 import model.dao.TicketDao;
 import model.dao.VehicleDao;
-import model.entities.Gate;
 import model.entities.Ticket;
 import model.entities.Vehicle;
 
-import java.sql.*;
-import java.time.LocalDateTime;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Time;
 import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.stream.Collectors;

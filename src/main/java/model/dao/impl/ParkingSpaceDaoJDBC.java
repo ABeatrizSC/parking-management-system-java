@@ -2,9 +2,7 @@ package model.dao.impl;
 
 import db.DB;
 import db.DbException;
-import enums.AccessType;
 import enums.SlotType;
-import enums.VehicleCategory;
 import model.dao.ParkingSpaceDao;
 import model.dao.VehicleDao;
 import model.entities.ParkingSpace;
