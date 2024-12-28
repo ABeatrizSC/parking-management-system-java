@@ -87,10 +87,12 @@ CREATE DATABASE `parking-management-system-java-db`;
 Siga os passos abaixo para configurar o projeto no seu ambiente
 1. **Clone o repositório**
 ```bash
- git clone https://github.com/ABeatrizSC/parking-management-system-java.git 
+ git clone https://github.com/ABeatrizSC/parking-management-system-java
+.git 
  ```
 ```bash
-  cd sistema-gestao-estacionamento 
+  cd parking-management-system-java
+ 
  ```
 
 2. **Instale as dependências**
