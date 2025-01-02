@@ -1,16 +1,37 @@
-package model.entities;
+package service;
 
 import enums.AccessType;
 import enums.SlotType;
 import enums.VehicleCategory;
-import model.dao.*;
+import model.dao.DeliveryTruckDao;
+import model.dao.MonthlyPayerDao;
+import model.dao.ParkingSpaceDao;
+import model.dao.TicketDao;
+import model.dao.VehicleDao;
+import model.entities.DeliveryTruck;
+import model.entities.Gate;
+import model.entities.MonthlyPayer;
+import model.entities.ParkingSpace;
+import model.entities.Ticket;
+import model.entities.Vehicle;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+import java.util.Scanner;
 
-import static UI.Colors.*;
-import static model.dao.DaoFactory.*;
+import static UI.Colors.ANSI_BLUE;
+import static UI.Colors.ANSI_RED;
+import static UI.Colors.ANSI_RESET;
+import static UI.Colors.ANSI_YELLOW;
+import static model.dao.DaoFactory.createDeliveryTruckDao;
+import static model.dao.DaoFactory.createMonthlyPayerDao;
+import static model.dao.DaoFactory.createParkingSpaceDao;
+import static model.dao.DaoFactory.createTicketDao;
+import static model.dao.DaoFactory.createVehicleDao;
 
-public class Parking {
+public class ParkingService {
     public static void printParkingSpaces(ParkingSpaceDao parkingSpaceDao) {
         for (int i = 1; i <= 500; i++) {
             String formattedNumber = String.format("%3d", i);
@@ -174,7 +195,7 @@ public class Parking {
 
         while (true) {
             parkingSpaces = sc.nextLine();
-            if (Objects.equals(parkingSpaces, "1")){
+            if (Objects.equals(parkingSpaces, "0")){
                 System.exit(1);
             }
             String[] p = parkingSpaces.split(" ");
@@ -200,14 +221,14 @@ public class Parking {
         if (vehicle.getAccessType() == AccessType.MONTHLY_PAYER) {
             for (int space : spaces){
                 if (space < 1 || space > SlotType.MONTHLY.getQuantity()) {
-                    System.out.println("These parking spaces are exclusively for casual visitors or don't exist. \nCheck if there is the number of sequential parking spaces required for your vehicle and try again:\n(If there are none, press 1 to exit)");
+                    System.out.println("These parking spaces are exclusive to monthly members or unavailable. \nIf there are not enough spaces, enter 0 to exit.");
                     return false;
                 }
             }
         } else {
             for (int space : spaces){
-                if (space < 201 || space > SlotType.CASUAL.getQuantity()) {
-                    System.out.println("These parking spaces are exclusive to monthly members or don't exist. \nCheck if there is the number of sequential parking spaces required for your vehicle and try again:\n(If there are none, press 1 to exit)");
+                if (space < 201 || space > SlotType.CASUAL.getQuantity() + SlotType.MONTHLY.getQuantity()) {
+                    System.out.println("These parking spaces are exclusive to monthly members or don't exist. \nIf there are not enough spaces, enter 0 to exit.");
                     return false;
                 }
             }
@@ -221,7 +242,7 @@ public class Parking {
                 spaces[i] = Integer.parseInt(p[i]);
             }
         } catch (NumberFormatException e) {
-            System.out.println("Error: Please enter valid numbers for parking spaces. \nCheck if there is the number of sequential parking spaces required for your vehicle and try again:\n(If there are none, press 1 to exit)");
+            System.out.println("Error: Please enter valid numbers for parking spaces. \nIf there are not enough spaces, enter 0 to exit.");
             return false;
         }
         return true;
@@ -229,7 +250,7 @@ public class Parking {
 
     private static Boolean isCorrectNumberOfSpaces(int[] spaces, Vehicle vehicle) {
         if (spaces.length != vehicle.getSlotSize()) {
-            System.out.println("Error: Incorrect number of parking spaces. Expected: " + vehicle.getSlotSize() + ". \nCheck if there is the number of sequential parking spaces required for your vehicle and try again:\n(If there are none, press 1 to exit)");
+            System.out.println("Error: Incorrect number of parking spaces. Expected: " + vehicle.getSlotSize() + ". \nIf there are not enough spaces, enter 0 to exit.");
             return false;
         }
         return true;
@@ -239,7 +260,7 @@ public class Parking {
         for (int i = 0; i < spaces.length; i++) {
             ParkingSpace parkingSpace = parkingSpaceDao.findById(spaces[i]);
             if (parkingSpace != null && parkingSpace.getIsOccupied()) {
-                System.out.println("Error: Parking Space " + spaces[i] + " is already occupied. \nCheck if there is the number of sequential parking spaces required for your vehicle and try again:\n(If there are none, press 1 to exit)");
+                System.out.println("Error: Parking Space " + spaces[i] + " is already occupied. \nIf there are not enough spaces, enter 0 to exit.");
                 return true;
             }
         }
@@ -250,7 +271,7 @@ public class Parking {
         Arrays.sort(spaces);
         for (int i = 1; i < spaces.length; i++) {
             if (spaces[i] != spaces[i - 1] + 1) {
-                System.out.println("Error: Parking spaces are not sequential. \nCheck if there is the number of sequential parking spaces required for your vehicle and try again:\n(If there are none, press 1 to exit)");
+                System.out.println("Error: Parking spaces are not sequential. \nCheck if there is the number of sequential parking spaces required for your vehicle and try again:\n(If there are none, enter 0 to exit)");
                 return false;
             }
         }
