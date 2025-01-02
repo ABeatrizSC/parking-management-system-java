@@ -3,13 +3,14 @@ package org.example;
 import enums.AccessType;
 import enums.VehicleCategory;
 import model.dao.VehicleDao;
-import model.entities.*;
+import model.entities.Ticket;
+import model.entities.Vehicle;
 
-import java.util.*;
+import java.util.Scanner;
 
 import static model.dao.DaoFactory.*;
 import static model.entities.Gate.*;
-import static model.entities.Parking.*;
+import static service.ParkingService.*;
 
 public class Main {
     public static void main(String[] args) {

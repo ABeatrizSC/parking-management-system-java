@@ -8,7 +8,10 @@ import model.dao.VehicleDao;
 import model.entities.Gate;
 import model.entities.Vehicle;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class VehicleDaoJDBC implements VehicleDao {
 
@@ -23,7 +26,7 @@ public class VehicleDaoJDBC implements VehicleDao {
         PreparedStatement st = null;
         try {
             st = conn.prepareStatement(
-                    "INSERT INTO vehicles "
+                    "INSERT INTO vehicle "
                             + "(category, slotSize, accessType, entranceGatesAvailable, exitGatesAvailable) "
                             + "VALUES "
                             + "(?, ?, ?, ?, ?)",
@@ -64,13 +67,13 @@ public class VehicleDaoJDBC implements VehicleDao {
         try {
             if(Gate.GateType.ENTRANCE.getGateNumbers().contains(selectionedGate)) {
                 st = conn.prepareStatement(
-                        "UPDATE vehicles "
+                        "UPDATE vehicle "
                                 + "SET entranceGate = ? "
                                 + "WHERE Id = ? "
                 );
             } else {
                 st = conn.prepareStatement(
-                        "UPDATE vehicles "
+                        "UPDATE vehicle "
                                 + "SET exitGate = ? "
                                 + "WHERE Id = ? "
                 );

@@ -3,10 +3,13 @@ package model.entities;
 import enums.VehicleCategory;
 import model.dao.VehicleDao;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+import java.util.Scanner;
 
-import static model.entities.Parking.chooseAEntranceGate;
-import static model.entities.Parking.chooseAExitGate;
+import static service.ParkingService.chooseAEntranceGate;
+import static service.ParkingService.chooseAExitGate;
 
 public class Gate {
     private Integer id;
