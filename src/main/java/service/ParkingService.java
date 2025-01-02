@@ -195,7 +195,7 @@ public class ParkingService {
 
         while (true) {
             parkingSpaces = sc.nextLine();
-            if (Objects.equals(parkingSpaces, "1")){
+            if (Objects.equals(parkingSpaces, "0")){
                 System.exit(1);
             }
             String[] p = parkingSpaces.split(" ");
@@ -221,14 +221,14 @@ public class ParkingService {
         if (vehicle.getAccessType() == AccessType.MONTHLY_PAYER) {
             for (int space : spaces){
                 if (space < 1 || space > SlotType.MONTHLY.getQuantity()) {
-                    System.out.println("These parking spaces are exclusively for casual visitors or don't exist. \nCheck if there is the number of sequential parking spaces required for your vehicle and try again:\n(If there are none, press 1 to exit)");
+                    System.out.println("These parking spaces are exclusive to monthly members or unavailable. \nIf there are not enough spaces, enter 0 to exit.");
                     return false;
                 }
             }
         } else {
             for (int space : spaces){
                 if (space < 201 || space > SlotType.CASUAL.getQuantity() + SlotType.MONTHLY.getQuantity()) {
-                    System.out.println("These parking spaces are exclusive to monthly members or don't exist. \nCheck if there is the number of sequential parking spaces required for your vehicle and try again:\n(If there are none, press 1 to exit)");
+                    System.out.println("These parking spaces are exclusive to monthly members or don't exist. \nIf there are not enough spaces, enter 0 to exit.");
                     return false;
                 }
             }
@@ -242,7 +242,7 @@ public class ParkingService {
                 spaces[i] = Integer.parseInt(p[i]);
             }
         } catch (NumberFormatException e) {
-            System.out.println("Error: Please enter valid numbers for parking spaces. \nCheck if there is the number of sequential parking spaces required for your vehicle and try again:\n(If there are none, press 1 to exit)");
+            System.out.println("Error: Please enter valid numbers for parking spaces. \nIf there are not enough spaces, enter 0 to exit.");
             return false;
         }
         return true;
@@ -250,7 +250,7 @@ public class ParkingService {
 
     private static Boolean isCorrectNumberOfSpaces(int[] spaces, Vehicle vehicle) {
         if (spaces.length != vehicle.getSlotSize()) {
-            System.out.println("Error: Incorrect number of parking spaces. Expected: " + vehicle.getSlotSize() + ". \nCheck if there is the number of sequential parking spaces required for your vehicle and try again:\n(If there are none, press 1 to exit)");
+            System.out.println("Error: Incorrect number of parking spaces. Expected: " + vehicle.getSlotSize() + ". \nIf there are not enough spaces, enter 0 to exit.");
             return false;
         }
         return true;
@@ -260,7 +260,7 @@ public class ParkingService {
         for (int i = 0; i < spaces.length; i++) {
             ParkingSpace parkingSpace = parkingSpaceDao.findById(spaces[i]);
             if (parkingSpace != null && parkingSpace.getIsOccupied()) {
-                System.out.println("Error: Parking Space " + spaces[i] + " is already occupied. \nCheck if there is the number of sequential parking spaces required for your vehicle and try again:\n(If there are none, press 1 to exit)");
+                System.out.println("Error: Parking Space " + spaces[i] + " is already occupied. \nIf there are not enough spaces, enter 0 to exit.");
                 return true;
             }
         }
@@ -271,7 +271,7 @@ public class ParkingService {
         Arrays.sort(spaces);
         for (int i = 1; i < spaces.length; i++) {
             if (spaces[i] != spaces[i - 1] + 1) {
-                System.out.println("Error: Parking spaces are not sequential. \nCheck if there is the number of sequential parking spaces required for your vehicle and try again:\n(If there are none, press 1 to exit)");
+                System.out.println("Error: Parking spaces are not sequential. \nCheck if there is the number of sequential parking spaces required for your vehicle and try again:\n(If there are none, enter 0 to exit)");
                 return false;
             }
         }

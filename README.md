@@ -77,22 +77,77 @@ Certifique-se de ter as seguintes ferramentas instaladas e configuradas:
 
 **IDE utilizada no desenvolvimento: IntelliJ IDEA Community Edition 2024.2**
 
-## Execução do Projeto
-### Criação do banco de dados no MySQL Workbench
+## Criação do banco de dados
+Execute o script do banco de dado em seu MySQL Workbench para criar o banco de dados e tabelas.
+
+O banco está configurado para atender a porta padrão 3306, usuário 'root' e senha vazia. Mude se necessário.
+
 ```sql
 CREATE DATABASE `parking-management-system-java-db`;
- ```
+USE `parking-management-system-java-db`;
 
+CREATE TABLE IF NOT EXISTS `vehicle` (   
+    `id` INT NOT NULL PRIMARY KEY AUTO_INCREMENT,   
+    `category` VARCHAR(100) NULL,   
+    `slotSize` INT NULL,   
+    `accessType` VARCHAR(50) NULL,   
+    `entranceGate` INT NULL,   
+    `entranceGatesAvailable` VARCHAR(100) NULL,   
+    `exitGate` INT NULL,   
+    `exitGatesAvailable` VARCHAR(100) NULL 
+);
+
+CREATE TABLE IF NOT EXISTS `monthlyPayer` (   
+    `id` INT NOT NULL PRIMARY KEY AUTO_INCREMENT,   
+    `licensePlate` VARCHAR(100) NULL,   
+    `valuePerMonth` DOUBLE NULL,   
+    `vehicle_id` INT NOT NULL
+);
+
+ALTER TABLE `monthlyPayer` 
+ADD FOREIGN KEY (`vehicle_id`) REFERENCES `vehicle`(`id`);
+
+CREATE TABLE IF NOT EXISTS `deliveryTruck` (   
+    `id` INT NOT NULL PRIMARY KEY AUTO_INCREMENT,   
+    `licensePlate` VARCHAR(100) NULL,   
+    `vehicle_id` INT NOT NULL
+);
+
+ALTER TABLE `deliveryTruck` 
+ADD FOREIGN KEY (`vehicle_id`) REFERENCES `vehicle`(`id`);
+
+CREATE TABLE IF NOT EXISTS `parkingSpace` (
+    `id` INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `isOccupied` BIT(2) NULL,
+    `slotType` VARCHAR(100) NULL,
+    `vehicle_id` INT 
+);
+
+ALTER TABLE `parkingSpace` 
+ADD FOREIGN KEY (`vehicle_id`) REFERENCES `vehicle`(`id`);
+
+CREATE TABLE IF NOT EXISTS `ticket` (
+    `id` INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `startHour` TIME NULL,
+    `finishHour` TIME NULL,
+    `totalValue` DOUBLE NULL,
+    `parkingSpaces` VARCHAR(100) NULL,
+    `vehicle_id` INT NOT NULL
+);
+
+ALTER TABLE `ticket` 
+ADD FOREIGN KEY (`vehicle_id`) REFERENCES `vehicle`(`id`);
+```
+
+## Execução do Projeto
 ### Clonagem e execução
 Siga os passos abaixo para configurar o projeto no seu ambiente
 1. **Clone o repositório**
 ```bash
- git clone https://github.com/ABeatrizSC/parking-management-system-java
-.git 
+ git clone https://github.com/ABeatrizSC/parking-management-system-java.git 
  ```
 ```bash
   cd parking-management-system-java
- 
  ```
 
 2. **Instale as dependências**
@@ -104,7 +159,7 @@ Siga os passos abaixo para configurar o projeto no seu ambiente
  3. **Execute o projeto**
 
 ### Criação das 500 vagas
-Como o desafio propôs o gerenciamento de 500 vagas, uma forma que pensei em criá-las rapidamente foi copiando o código feito abaixo e executá-lo somente uma vez na classe Main:
+Como o desafio propôs o gerenciamento de 500 vagas, para criá-las basta copiar código abaixo e executá-lo somente uma vez na classe Main:
 
  ```java
 ParkingSpace monthlyParkingSpace = new ParkingSpace(null, SlotType.MONTHLY, false, null);
@@ -117,63 +172,6 @@ for (int i = 1; i <= 300; i++) {
     parkingSpaceDao.insert(casualParkingSpace);
 }
  ```
-
-## Script do banco de dados
-O FlyWay no momento da execução é responsável por criar as tabelas abaixo automaticamente:
-
-```sql
-CREATE TABLE IF NOT EXISTS `vehicles` (   
-    `id` INT NOT NULL PRIMARY KEY AUTO_INCREMENT,   
-    `category` VARCHAR(100) NULL,   
-    `slotSize` INT NULL,   
-    `accessType` VARCHAR(50) NULL,   
-    `entranceGate` INT NULL,   
-    `entranceGatesAvailable` VARCHAR(100) NULL,   
-    `exitGate` INT NULL,   
-    `exitGatesAvailable` VARCHAR(100) NULL 
-);
-
-CREATE TABLE IF NOT EXISTS `monthlyPayers` (   
-    `id` INT NOT NULL PRIMARY KEY AUTO_INCREMENT,   
-    `licensePlate` VARCHAR(100) NULL,   
-    `valuePerMonth` DOUBLE NULL,   
-    `vehicle_id` INT NOT NULL
-);
-
-ALTER TABLE `monthlyPayers` 
-ADD FOREIGN KEY (`vehicle_id`) REFERENCES `vehicles`(`id`);
-
-CREATE TABLE IF NOT EXISTS `deliveryTrucks` (   
-    `id` INT NOT NULL PRIMARY KEY AUTO_INCREMENT,   
-    `licensePlate` VARCHAR(100) NULL,   
-    `vehicle_id` INT NOT NULL
-);
-
-ALTER TABLE `deliveryTrucks` 
-ADD FOREIGN KEY (`vehicle_id`) REFERENCES `vehicles`(`id`);
-
-CREATE TABLE IF NOT EXISTS `parkingSpaces` (
-    `id` INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    `isOccupied` BIT(2) NULL,
-    `slotType` VARCHAR(100) NULL,
-    `vehicle_id` INT 
-);
-
-ALTER TABLE `parkingSpaces` 
-ADD FOREIGN KEY (`vehicle_id`) REFERENCES `vehicles`(`id`);
-
-CREATE TABLE IF NOT EXISTS `tickets` (
-    `id` INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    `startHour` TIME NULL,
-    `finishHour` TIME NULL,
-    `totalValue` DOUBLE NULL,
-    `parkingSpaces` VARCHAR(100) NULL,
-    `vehicle_id` INT NOT NULL
-);
-
-ALTER TABLE `tickets` 
-ADD FOREIGN KEY (`vehicle_id`) REFERENCES `vehicles`(`id`);
-```
 
 ## Como navegar/Utilizar o sistema
 O menu é composto por opções que poderão ser selecionadas a partir de um número referenciado antes da opção ou então por um campo personalizado de acordo com a opção desejada pelo usuário.
